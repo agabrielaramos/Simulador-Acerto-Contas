@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Acerto de Contas — Cessação + Baixa Médica</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#667085;--line:#dfe3ea;--blue:#1769e0;--soft:#eef5ff;--warn:#fff7e6;--green:#067647}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;color:var(--ink)}
+.wrap{max-width:1120px;margin:28px auto;padding:0 18px}.hero{background:linear-gradient(135deg,#12315b,#1769e0);color:#fff;border-radius:18px;padding:28px;box-shadow:0 10px 28px #12315b22}
+h1{margin:0 0 7px;font-size:27px}.hero p{margin:0;opacity:.92}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 4px 15px #1018280a}.full{grid-column:1/-1}h2{font-size:18px;margin:0 0 14px}
+label{font-size:13px;font-weight:650;display:block;margin:11px 0 5px}input,select{width:100%;padding:10px 11px;border:1px solid #cfd5df;border-radius:8px;font-size:14px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint,.note{font-size:12px;color:var(--muted);line-height:1.5}.check{display:flex;align-items:center;gap:8px;margin:12px 0}.check input{width:auto}
+button{border:0;background:var(--blue);color:#fff;border-radius:9px;padding:12px 18px;font-weight:700;cursor:pointer}.secondary{background:#eef2f7;color:#344054}.actions{display:flex;gap:10px;margin-top:17px}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.metric{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fafbfc}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;font-size:19px;margin-top:4px}.metric small{display:block;color:var(--muted);margin-top:4px}.total{background:var(--soft);border-color:#c9dcff}.total strong{color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:17px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
+.warning{background:var(--warn);border:1px solid #f0d18d;border-radius:9px;padding:12px;margin-top:15px;font-size:12px;line-height:1.5}.ok{color:var(--green);font-weight:700}
+.detail{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:15px;font-size:13px;line-height:1.6}.hidden{display:none}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.results{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<h1>Acerto de Contas — Cessação com Baixa Médica</h1>
+<p>Férias, subsídios e restantes créditos, com discriminação dos dias e dos valores já pagos.</p>
+</div>
+
+<div class="grid">
+<section class="card">
+<h2>1. Dados do contrato</h2>
+<div class="row">
+<div><label>Data de admissão</label><input id="admission" type="date"></div>
+<div><label>Data de cessação</label><input id="termination" type="date"></div>
+</div>
+<div class="row">
+<div><label>Retribuição base mensal (€)</label><input id="salary" type="number" min="0" step=".01" value="1500"></div>
+<div><label>Diuturnidades (€)</label><input id="diut" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="row">
+<div><label>Outras componentes retributivas para férias (€)</label><input id="extras" type="number" min="0" step=".01" value="0"></div>
+<div><label>Dias de férias anuais</label><input id="vacDays" type="number" min="1" step="1" value="22"></div>
+</div>
+<label>Motivo da cessação</label>
+<select id="reason">
+<option>Caducidade</option><option>Denúncia pelo trabalhador</option><option>Revogação por acordo</option>
+<option>Despedimento</option><option>Despedimento coletivo</option><option>Outro</option>
+</select>
+</section>
+
+<section class="card">
+<h2>2. Suspensão por doença</h2>
+<div class="check"><input id="hasSusp" type="checkbox" checked onchange="toggleSusp()"><label for="hasSusp" style="margin:0">Existiu impedimento prolongado / suspensão por doença?</label></div>
+<div id="suspBox">
+<div class="row">
+<div><label>Início da suspensão</label><input id="suspStart" type="date"></div>
+<div><label>Fim da suspensão / regresso</label><input id="suspEnd" type="date"></div>
+</div>
+<div class="hint">Se a suspensão termina apenas com a cessação, deixe a data de fim em branco. O simulador considera como suspensão relevante o impedimento prolongado nos termos do art. 296.º.</div>
+</div>
+<div class="row">
+<div><label>Férias já gozadas do direito vencido (dias)</label><input id="vacTakenDays" type="number" min="0" step=".01" value="0"></div>
+<div><label>Férias proporcionais já gozadas no ano (dias)</label><input id="propTakenDays" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="row">
+<div><label>Retribuição de férias já paga (€)</label><input id="vacPaid" type="number" min="0" step=".01" value="0"></div>
+<div><label>Subsídio de férias vencido já pago (€)</label><input id="vacSubPaid" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="row">
+<div><label>Subsídio de férias proporcional já pago (€)</label><input id="propSubPaid" type="number" min="0" step=".01" value="0"></div>
+<div></div>
+</div>
+<div class="actions"><button onclick="calculate()">Calcular acerto</button><button class="secondary" onclick="resetForm()">Limpar</button></div>
+</section>
+
+<section class="card full">
+<h2>3. Férias — cálculo dos dias</h2>
+<div class="results">
+<div class="metric"><span>Férias vencidas (direito)</span><strong id="earnedDays">0,00 dias</strong></div>
+<div class="metric"><span>Férias vencidas já gozadas</span><strong id="takenDays">0,00 dias</strong></div>
+<div class="metric total"><span>Férias vencidas não gozadas</span><strong id="unusedDays">0,00 dias</strong></div>
+<div class="metric"><span>Férias proporcionais do ano</span><strong id="propDays">0,00 dias</strong></div>
+<div class="metric"><span>Proporcionais já gozados</span><strong id="propTaken">0,00 dias</strong></div>
+<div class="metric total"><span>Proporcionais ainda devidos</span><strong id="propBalanceDays">0,00 dias</strong></div>
+</div>
+<div class="detail" id="logic"></div>
+</section>
+
+<section class="card full">
+<h2>4. Valores do acerto</h2>
+<div class="results">
+<div class="metric"><span>Retribuição vencida do mês</span><strong id="salaryDue">€0,00</strong></div>
+<div class="metric"><span>Retribuição — férias vencidas não gozadas</span><strong id="vacBalance">€0,00</strong></div>
+<div class="metric"><span>Subsídio de férias — vencido</span><strong id="vacSubBalance">€0,00</strong></div>
+<div class="metric"><span>Retribuição — férias proporcionais</span><strong id="propVacValue">€0,00</strong></div>
+<div class="metric"><span>Subsídio de férias — proporcional</span><strong id="propSubValue">€0,00</strong></div>
+<div class="metric"><span>Subsídio de Natal</span><strong id="christmas">€0,00</strong></div>
+</div>
+<div class="results" style="margin-top:12px">
+<div class="metric total"><span>Total bruto dos créditos</span><strong id="gross">€0,00</strong></div>
+<div class="metric"><span>Compensação / indemnização</span><strong id="compensation">€0,00</strong></div>
+<div class="metric total"><span>Total antes de descontos</span><strong id="grand">€0,00</strong></div>
+</div>
+
+<table>
+<thead><tr><th>Parcela</th><th>Valor</th><th>Observação</th></tr></thead>
+<tbody>
+<tr><td>Retribuição vencida</td><td id="t1">€0,00</td><td>Tempo efetivamente retribuído</td></tr>
+<tr><td>Férias vencidas não gozadas</td><td id="t2">€0,00</td><td>Após abatimento das férias gozadas/pagas</td></tr>
+<tr><td>Subsídio de férias vencido</td><td id="t3">€0,00</td><td>Após abatimento do já pago</td></tr>
+<tr><td>Férias proporcionais</td><td id="t4">€0,00</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de férias proporcional</td><td id="t5">€0,00</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de Natal</td><td id="t6">€0,00</td><td>Proporcional ao tempo de serviço</td></tr>
+<tr><td>Compensação / indemnização</td><td id="t7">€0,00</td><td>A parametrizar pelo motivo da cessação</td></tr>
+</tbody>
+</table>
+
+<div class="detail"><b>Fórmula dos proporcionais:</b> vencimento ÷ número de dias do ano × dias efetivamente trabalhados. Em 2026: vencimento ÷ 365 × dias de serviço efetivo. As férias vencidas são calculadas separadamente: vencimento ÷ 22 × dias de férias vencidas não gozadas.</div>
+<div class="warning"><b>Importante:</b> esta versão separa expressamente os dias de férias vencidos dos proporcionais. O período de suspensão por doença não é tratado como “dias trabalhados” para o subsídio de Natal: o art. 263.º manda atender ao tempo de serviço prestado. Já no regime de férias, o art. 245.º tem uma regra especial quando a cessação ocorre após impedimento prolongado. O cálculo deve ser validado para o caso concreto e eventual instrumento de regulamentação coletiva.</div>
+<div class="note" style="margin-top:12px">Base legal consultada: Código do Trabalho, arts. 237.º, 239.º, 245.º, 263.º, 264.º e 296.º. citeturn0search9turn0search5turn0search1turn0search0turn0search8</div>
+</section>
+</div>
+</div>
+
+<script>
+const eur=n=>new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR'}).format(n||0);
+const num=n=>new Intl.NumberFormat('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
+const v=id=>parseFloat(document.getElementById(id).value)||0;
+const d=id=>document.getElementById(id).value;
+function dateUTC(s){const [y,m,day]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,day))}
+function days(a,b){if(!a||!b)return 0;return Math.max(0,Math.floor((dateUTC(b)-dateUTC(a))/86400000)+1)}
+function overlapDays(a,b,c,e){
+  const s=dateUTC(a)>dateUTC(c)?a:c, f=dateUTC(b)<dateUTC(e)?b:e;
+  return f>=s?days(s,f):0;
+}
+function monthFrac(start,end){return Math.max(0,days(start,end)/30)}
+function set(id,val){document.getElementById(id).textContent=typeof val==='number'?eur(val):val}
+function toggleSusp(){document.getElementById('suspBox').classList.toggle('hidden',!document.getElementById('hasSusp').checked)}
+
+function calculate(){
+ const adm=d('admission'), term=d('termination');
+ if(!adm||!term){alert('Preencha a data de admissão e a data de cessação.');return}
+ if(dateUTC(term)<dateUTC(adm)){alert('A cessação não pode ser anterior à admissão.');return}
+
+ const monthly=v('salary')+v('diut')+v('extras');
+ const vacAnnual=v('vacDays');
+ const y=term.slice(0,4), yearStart=y+'-01-01';
+
+ const has=document.getElementById('hasSusp').checked;
+ const ss=has?d('suspStart'):'';
+ let se=has?d('suspEnd'):'';
+ if(has && !ss){alert('Indique o início da suspensão.');return}
+ if(has && !se) se=term;
+
+ const takenDays=Math.max(0,v('vacTakenDays'));
+ const propTakenDays=Math.max(0,v('propTakenDays'));
+ const vacPaid=Math.max(0,v('vacPaid'));
+ const vacSubPaid=Math.max(0,v('vacSubPaid'));
+ const propSubPaid=Math.max(0,v('propSubPaid'));
+
+ /*
+   1) FÉRIAS VENCIDAS:
+      Se o trabalhador já tinha direito aos 22 dias vencidos em 1/1,
+      esses 22 dias são uma "bolsa" independente do proporcional do ano.
+      Ex.: 22 - 1 gozado = 21 dias a pagar.
+   2) PROPORCIONAIS:
+      Para o cenário pedido, apuramos o tempo de serviço efetivamente
+      prestado no ano da cessação. A proporção dos 22 dias é:
+         22 × dias de serviço / dias do ano
+      e o mesmo período é aplicado à retribuição e ao subsídio de férias.
+   3) NATAL:
+      A mesma janela de serviço efetivo é usada, em conformidade com o art. 263.º.
+   4) BAIXA prolongada:
+      O art. 245.º, n.º 4, tem uma regra especial quando a cessação ocorre
+      após impedimento prolongado; o resultado dessa situação é identificado
+      na memória de cálculo, sem misturá-lo com os proporcionais normais.
+ */
+
+ let serviceStart=yearStart;
+ let serviceEnd=term;
+
+ // If admission occurs during termination year, service starts on admission.
+ if(dateUTC(adm)>dateUTC(serviceStart)) serviceStart=adm;
+
+ let serviceDays=days(serviceStart,serviceEnd);
+
+ // Exclude suspension days from the effective-service window.
+ if(has && ss){
+   const overlap=overlapDays(yearStart,term,ss,se);
+   serviceDays=Math.max(0,serviceDays-overlap);
+ }
+
+ const yearLen=(Number(y)%4===0?366:365);
+
+ // Vencidas: in a normal multi-year contract, full annual entitlement is already vested.
+ // If the contract started in the same year, there is no prior-year 22-day bucket.
+ let earnedDays=0;
+ if(adm.slice(0,4)!==y){
+   earnedDays=vacAnnual;
+ } else {
+   // First-year / contract <= 12 months: proportional entitlement.
+   earnedDays=Math.min(vacAnnual, vacAnnual*serviceDays/yearLen);
+ }
+
+ // Férias vencidas: nunca podem ultrapassar o direito anual introduzido.
+// Ex.: 22 dias de direito - 1 dia gozado = 21 dias a pagar.
+const vestedEntitlement=Math.min(vacAnnual, Math.max(0,earnedDays));
+const unusedDays=Math.min(vestedEntitlement, Math.max(0,vestedEntitlement-takenDays));
+
+// Proportional entitlement for the termination year.
+ // For a multi-year contract, this is based on effective service in the year.
+ let propDays=vacAnnual*serviceDays/yearLen;
+
+ // If this is the first calendar year of the contract, don't duplicate the same entitlement.
+ if(adm.slice(0,4)===y) propDays=0;
+
+ // If there was a prolonged suspension and termination follows it, art.245(4)
+ // creates a special rule tied to service in the year suspension began.
+ let specialText='';
+ if(has && ss && days(ss,se)>30){
+   const sy=ss.slice(0,4);
+   const specialStart=(adm.slice(0,4)===sy)?adm:sy+'-01-01';
+   const specialServiceDays=Math.max(0,days(specialStart,ss)-1);
+   const specialYearLen=(Number(sy)%4===0?366:365);
+   const specialDays=vacAnnual*specialServiceDays/specialYearLen;
+   specialText=` <b>Atenção à regra especial da baixa prolongada:</b> suspensão iniciada em ${sy}; o art. 245.º, n.º 4, exige apuramento próprio das férias/subsídio correspondentes ao tempo de serviço no ano em que começou a suspensão (${num(specialDays)} dias). Este valor deve ser tratado separadamente para evitar dupla contagem.`;
+ }
+
+ // Days already used from proportional bucket.
+ const propBalanceDays=Math.max(0,propDays-propTakenDays);
+
+ // Monetary value per vacation day.
+ // Fórmula das férias vencidas não gozadas:
+// (vencimento relevante / número de dias de férias anuais) × dias não gozados.
+// Assim, se o direito é 22 dias e foi gozado 1 dia, são pagos 21 dias.
+const perDay=monthly/vacAnnual;
+const vacGross=Math.min(monthly, perDay*unusedDays);
+
+// Proporcionais: ACT-style formula
+// (vencimento / número de dias do ano) × dias efetivamente trabalhados.
+const propGross=(monthly/yearLen)*serviceDays;
+const propSubGross=propGross;
+
+ // Subsídio de férias vencido e proporcional são rubricas independentes.
+ const vestedSubBalance=Math.max(0,vacGross-Math.min(vacGross,vacSubPaid));
+ const proportionalSubBalance=Math.max(0,propSubGross-propSubPaid);
+ const totalSubGross=vacGross+propSubGross;
+ const totalSubBalance=vestedSubBalance+proportionalSubBalance;
+
+ // Vacation remuneration already paid is deducted from vacation remuneration only.
+ // Separar rigorosamente férias vencidas das férias proporcionais.
+// O campo "Férias vencidas não gozadas" NUNCA inclui os proporcionais.
+const paidAgainstVested=Math.min(vacGross,vacPaid);
+const remainingPaidForProportional=Math.max(0,vacPaid-paidAgainstVested);
+const vacBalance=Math.max(0,vacGross-paidAgainstVested);
+const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
+
+ // Salary in termination month: only calendar days outside suspension.
+ const month=term.slice(5,7);
+ const monthStart=y+'-'+month+'-01';
+ const monthLen=new Date(Number(y),Number(month),0).getDate();
+ let paidCalendarDays=Number(term.slice(8));
+ if(has&&ss) paidCalendarDays=Math.max(0,paidCalendarDays-overlapDays(monthStart,term,ss,se));
+ const salaryDue=monthly*paidCalendarDays/monthLen;
+
+ // Christmas: effective service days in the termination year.
+ const christmas=monthly*serviceDays/yearLen;
+
+ const compensation=0;
+ const gross=salaryDue+vacBalance+propGross+totalSubBalance+christmas;
+ const grand=gross+compensation;
+
+ document.getElementById('earnedDays').textContent=num(earnedDays)+' dias';
+ document.getElementById('takenDays').textContent=num(takenDays)+' dias';
+ document.getElementById('unusedDays').textContent=num(unusedDays)+' dias';
+ document.getElementById('propDays').textContent=num(propDays)+' dias';
+ document.getElementById('propTaken').textContent=num(propTakenDays)+' dias';
+ document.getElementById('propBalanceDays').textContent=num(propBalanceDays)+' dias';
+
+ const specialNote=specialText||' Não existe, neste cenário, uma suspensão prolongada a exigir a regra especial do art. 245.º, n.º 4.';
+ document.getElementById('logic').innerHTML=
+ `<b>Memória de cálculo:</b><br>
+ Período de serviço efetivo no ano da cessação: <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(yearStart,term,ss,se))+' dias de suspensão)':''}.<br>
+ Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> a pagar.<br>
+ Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; menos ${num(propTakenDays)} dias já gozados = <b>${num(propBalanceDays)} dias</b>.<br>
+ Valor diário das férias vencidas: <b>${eur(monthly)} / ${num(vacAnnual)} = ${eur(perDay)}</b>.<br>
+Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
+ Retribuição de férias proporcional (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias = ${eur(propGross)}</b>.<br>
+ Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
+ Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(proportionalSubBalance)}</b>.<br>
+ Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.
+ ${specialNote}`;
+
+ set('salaryDue',salaryDue);
+ set('vacBalance',vacBalance);
+ set('vacSubBalance',vestedSubBalance);
+ set('propVacValue',propGross);
+ set('propSubValue',proportionalSubBalance);
+ set('christmas',christmas);
+ set('gross',gross);
+ set('compensation',compensation);
+ set('grand',grand);
+ set('t1',salaryDue);
+ set('t2',vacBalance);
+set('t3',vestedSubBalance);
+set('t4',propGross);
+set('t5',Math.max(0,propSubGross-propSubPaid));
+ set('t6',christmas);
+ set('t7',compensation);
+}
+function monthsCompleted(a,b){
+ const A=dateUTC(a),B=dateUTC(b);
+ let m=(B.getUTCFullYear()-A.getUTCFullYear())*12+(B.getUTCMonth()-A.getUTCMonth());
+ if(B.getUTCDate()<A.getUTCDate())m--;
+ return Math.max(0,m);
+}
+function resetForm(){location.reload()}
+
+// Exemplo de teste: admissão 02/12/2019; baixa 09/03/2026; cessação 26/09/2026.
+document.getElementById('admission').value='2019-12-02';
+document.getElementById('termination').value='2026-09-26';
+document.getElementById('suspStart').value='2026-03-09';
+document.getElementById('suspEnd').value='';
+document.getElementById('salary').value='950';
+document.getElementById('vacTakenDays').value='0';
+document.getElementById('propTakenDays').value='0';
+document.getElementById('vacPaid').value='0';
+document.getElementById('vacSubPaid').value='0';
+document.getElementById('propSubPaid').value='0';
+document.getElementById('reason').value='Denúncia pelo trabalhador';
+calculate();
+</script>
+</body></html>
