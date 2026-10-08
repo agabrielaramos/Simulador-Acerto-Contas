@@ -246,7 +246,57 @@ Simulador de compensação por cessação de contrato de trabalho
 </section>
 
 <section class="card">
-<h2>2. Suspensão por doença</h2>
+<h2>2. Formação profissional não ministrada</h2>
+<div class="hint" style="margin-bottom:12px">
+  O simulador apura o mínimo anual de formação contínua, desconta as horas efetivamente ministradas e calcula a retribuição correspondente às horas de formação devidas na cessação.
+</div>
+
+<div class="row">
+<div>
+<label>Período Normal de Trabalho Semanal (horas) <span class="muted">Normalmente 40 horas</span></label>
+<input id="trainingWeeklyHours" type="number" min="1" step=".01" value="40">
+</div>
+<div>
+<label>N.º de Horas de Formação Ministradas nos Últimos 5 Anos</label>
+<div class="hint">Em regra, 40 horas/ano. No ano da cessação é calculado o proporcional ao tempo de trabalho efetivo.</div>
+</div>
+</div>
+
+<div class="row">
+<div><label>2022 (horas)</label><input id="training2022" type="number" min="0" step=".01" value="0"></div>
+<div><label>2023 (horas)</label><input id="training2023" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="row">
+<div><label>2024 (horas)</label><input id="training2024" type="number" min="0" step=".01" value="0"></div>
+<div><label>2025 (horas)</label><input id="training2025" type="number" min="0" step=".01" value="0"></div>
+</div>
+<div class="row">
+<div><label>2026 (horas)</label><input id="training2026" type="number" min="0" step=".01" value="0"></div>
+<div>
+<label>Neste período usufruiu do estatuto trabalhador-estudante?</label>
+<select id="studentWorker">
+<option value="nao" selected>Não</option>
+<option value="sim">Sim</option>
+</select>
+</div>
+</div>
+
+<div class="results" style="margin-top:12px">
+<div class="metric"><span>Horas de formação devidas</span><strong id="trainingDueHours">—</strong></div>
+<div class="metric"><span>Horas ministradas / consideradas</span><strong id="trainingProvidedHours">—</strong></div>
+<div class="metric total"><span>Horas de formação a pagar</span><strong id="trainingBalanceHours">—</strong></div>
+<div class="metric"><span>Valor hora</span><strong id="trainingHourlyRate">—</strong></div>
+<div class="metric total"><span>Créditos de formação não ministrada</span><strong id="trainingValue">—</strong></div>
+<div class="metric"><span>Período considerado</span><strong id="trainingPeriod">—</strong></div>
+</div>
+
+<div class="detail" id="trainingLogic">Preencha os dados do contrato e clique em "Calcular acerto".</div>
+<div class="note" style="margin-top:10px">
+  <b>Nota:</b> as horas de dispensa ao abrigo do estatuto trabalhador-estudante podem contar para o cumprimento do mínimo de formação. Como o campo apresentado é apenas Sim/Não, esta versão não presume automaticamente um número de horas de dispensa; se marcar “Sim”, o resultado sinaliza que essas horas devem ser confirmadas/documentadas.
+</div>
+</section>
+<section class="card">
+<h2>3. Suspensão por doença</h2>
 <div class="check"><input id="hasSusp" type="checkbox" onchange="toggleSusp()"><label for="hasSusp" style="margin:0">Existiu impedimento prolongado / suspensão por doença?</label></div>
 <div id="suspBox" class="hidden">
 <div class="row">
@@ -271,7 +321,7 @@ Simulador de compensação por cessação de contrato de trabalho
 </section>
 
 <section class="card full">
-<h2>3. Férias — cálculo dos dias</h2>
+<h2>4. Férias — cálculo dos dias</h2>
 <div class="results">
 <div class="metric"><span>Férias vencidas (direito)</span><strong id="earnedDays">—</strong></div>
 <div class="metric"><span>Férias vencidas já gozadas</span><strong id="takenDays">—</strong></div>
@@ -284,7 +334,7 @@ Simulador de compensação por cessação de contrato de trabalho
 </section>
 
 <section class="card full">
-<h2>4. Valores do acerto</h2>
+<h2>5. Valores do acerto</h2>
 <div class="results">
 <div class="metric"><span>Retribuição vencida do mês</span><strong id="salaryDue">—</strong></div>
 <div class="metric"><span>Retribuição — férias vencidas não gozadas</span><strong id="vacBalance">—</strong></div>
@@ -292,6 +342,7 @@ Simulador de compensação por cessação de contrato de trabalho
 <div class="metric"><span>Retribuição — férias proporcionais</span><strong id="propVacValue">—</strong></div>
 <div class="metric"><span>Subsídio de férias — proporcional</span><strong id="propSubValue">—</strong></div>
 <div class="metric"><span>Subsídio de Natal</span><strong id="christmas">—</strong></div>
+<div class="metric"><span>Créditos de formação não ministrada</span><strong id="trainingValueSummary">—</strong></div>
 </div>
 <div class="results" style="margin-top:12px">
 <div class="metric total"><span>Total bruto dos créditos</span><strong id="gross">—</strong></div>
@@ -309,6 +360,7 @@ Simulador de compensação por cessação de contrato de trabalho
 <tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td>Saldo ainda devido</td></tr>
 <tr><td>Subsídio de Natal</td><td id="t6">—</td><td>Proporcional ao tempo de serviço</td></tr>
 <tr><td>Compensação / indemnização</td><td id="t7">—</td><td id="compObservation">Selecione o motivo da cessação</td></tr>
+<tr><td>Créditos de formação não ministrada</td><td id="t8">—</td><td>Art. 134.º — horas de formação devidas não proporcionadas / crédito de horas</td></tr>
 </tbody>
 </table>
 
@@ -334,6 +386,54 @@ function monthFrac(start,end){return Math.max(0,days(start,end)/30)}
 function set(id,val){document.getElementById(id).textContent=typeof val==='number'?eur(val):val}
 function toggleSusp(){document.getElementById('suspBox').classList.toggle('hidden',!document.getElementById('hasSusp').checked)}
 
+function daysInYear(year){
+  return ((Number(year)%4===0 && (Number(year)%100!==0 || Number(year)%400===0)) ? 366 : 365);
+}
+
+function effectiveDaysForYear(year, adm, term, hasSusp, ss, se){
+  const ys=`${year}-01-01`, ye=`${year}-12-31`;
+  const start=dateUTC(adm)>dateUTC(ys)?adm:ys;
+  const end=dateUTC(term)<dateUTC(ye)?term:ye;
+  if(dateUTC(start)>dateUTC(end)) return 0;
+  let result=days(start,end);
+  if(hasSusp && ss){
+    result=Math.max(0,result-overlapDays(start,end,ss,se));
+  }
+  return result;
+}
+
+function trainingYearDueHours(year, adm, term, contractType, hasSusp, ss, se){
+  const activeDays=effectiveDaysForYear(year,adm,term,hasSusp,ss,se);
+  if(activeDays<=0) return 0;
+  const yearLen=daysInYear(year);
+  if(String(year)===String(term.slice(0,4))) return 40*activeDays/yearLen;
+  if(String(year)===String(adm.slice(0,4))) return 40*activeDays/yearLen;
+  if(contractType==='termo_certo' || contractType==='termo_incerto') return 40*activeDays/yearLen;
+  return 40;
+}
+
+function calculateTraining(adm,term,contractType,hasSusp,ss,se){
+  const weekly=Math.max(1,v('trainingWeeklyHours')||40);
+  const currentYear=Number(term.slice(0,4));
+  const years=[currentYear-4,currentYear-3,currentYear-2,currentYear-1,currentYear];
+  let totalDue=0, totalProvided=0;
+  const rows=[];
+  for(const year of years){
+    const id='training'+year;
+    const input=document.getElementById(id);
+    const provided=input?Math.max(0,parseFloat(input.value)||0):0;
+    const due=trainingYearDueHours(year,adm,term,contractType,hasSusp,ss,se);
+    const balance=Math.max(0,due-provided);
+    totalDue+=due;
+    totalProvided+=Math.min(provided,due);
+    rows.push({year,due,provided,balance});
+  }
+  const hourly=((v('salary')+v('diut'))*12)/(52*weekly);
+  const totalHours=rows.reduce((acc,r)=>acc+r.balance,0);
+  const value=hourly*totalHours;
+  return {weekly,rows,totalDue,totalProvided,totalHours,hourly,value};
+}
+
 function calculate(){
  const adm=d('admission'), term=d('termination');
  if(!adm||!term){alert('Preencha a data de admissão e a data de cessação.');return}
@@ -348,6 +448,9 @@ function calculate(){
  let se=has?d('suspEnd'):'';
  if(has && !ss){alert('Indique o início da suspensão.');return}
  if(has && !se) se=term;
+
+ const contractType=document.getElementById('contractType').value;
+ const training=calculateTraining(adm,term,contractType,has,ss,se);
 
  const takenDays=Math.max(0,v('vacTakenDays'));
  const propTakenDays=Math.max(0,v('propTakenDays'));
@@ -464,14 +567,13 @@ const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
  const christmas=monthly*serviceDays/yearLen;
 
  const reason=document.getElementById('reason').value;
- const contractType=document.getElementById('contractType').value;
  const baseDiut=Math.max(0,v('salary')+v('diut'));
 
  // Compensações previstas na lei. O cálculo usa a retribuição base + diuturnidades,
  // que é a base indicada no art. 366.º. As restantes componentes não entram aqui.
  const compensationResult=calculateCompensation(adm,term,baseDiut,contractType,reason);
  const compensation=compensationResult.value;
- const gross=salaryDue+vacBalance+propGross+totalSubBalance+christmas;
+ const gross=salaryDue+vacBalance+propGross+totalSubBalance+christmas+training.value;
  const grand=gross+compensation;
 
  document.getElementById('earnedDays').textContent=num(earnedDays)+' dias';
@@ -493,9 +595,26 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
  Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
  Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(proportionalSubBalance)}</b>.<br>
  Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
- <br><b>Compensação / indemnização:</b><br>
+ <br><b>Formação profissional:</b> ${num(training.totalHours)} h × ${eur(training.hourly)}/h = <b>${eur(training.value)}</b>.<br>
+ <b>Compensação / indemnização:</b><br>
  ${getCompensationFormula(adm,term,baseDiut,contractType,reason,compensation)}
  ${specialNote}`;
+
+ document.getElementById('trainingDueHours').textContent=num(training.totalDue)+' h';
+ document.getElementById('trainingProvidedHours').textContent=num(training.totalProvided)+' h';
+ document.getElementById('trainingBalanceHours').textContent=num(training.totalHours)+' h';
+ document.getElementById('trainingHourlyRate').textContent=eur(training.hourly)+'/h';
+ document.getElementById('trainingValue').textContent=eur(training.value);
+ document.getElementById('trainingValueSummary').textContent=eur(training.value);
+ document.getElementById('trainingPeriod').textContent=`${training.rows[0].year}–${training.rows[training.rows.length-1].year}`;
+ const trainingLines=training.rows.map(r=>`${r.year}: ${num(r.due)} h devidas − ${num(Math.min(r.provided,r.due))} h ministradas = <b>${num(r.balance)} h</b>`).join('<br>');
+ document.getElementById('trainingLogic').innerHTML=
+   `<b>Memória de cálculo da formação:</b><br>
+   Valor hora: <b>((${eur(v('salary'))} + ${eur(v('diut'))}) × 12) ÷ (52 × ${num(training.weekly)}) = ${eur(training.hourly)}/h</b>.<br>
+   ${trainingLines}<br>
+   Total de horas de formação a pagar: <b>${num(training.totalHours)} h</b>.<br>
+   Créditos de formação não ministrada: <b>${num(training.totalHours)} h × ${eur(training.hourly)}/h = ${eur(training.value)}</b>.
+   ${document.getElementById('studentWorker').value==='sim' ? '<br><b>Trabalhador-estudante:</b> o resultado não deduz automaticamente horas de dispensa; estas devem ser quantificadas e comprovadas para serem imputadas ao mínimo de formação.' : ''}`;
 
  set('salaryDue',salaryDue);
  set('vacBalance',vacBalance);
@@ -515,6 +634,7 @@ set('t4',propGross);
 set('t5',Math.max(0,propSubGross-propSubPaid));
  set('t6',christmas);
  set('t7',compensation);
+ set('t8',training.value);
 }
 
 
@@ -994,9 +1114,9 @@ function resetForm(){
   document.getElementById('resolutionDays').value='';
   document.getElementById('compFields').classList.add('hidden');
   document.getElementById('suspBox').classList.add('hidden');
-  ['earnedDays','takenDays','unusedDays','propDays','propTaken','propBalanceDays'].forEach(id=>document.getElementById(id).textContent='—');
+  ['earnedDays','takenDays','unusedDays','propDays','propTaken','propBalanceDays','trainingDueHours','trainingProvidedHours','trainingBalanceHours','trainingHourlyRate','trainingValue','trainingPeriod'].forEach(id=>document.getElementById(id).textContent='—');
   document.getElementById('logic').textContent='Preencha os dados do contrato e clique em "Calcular acerto".';
-  ['salaryDue','vacBalance','vacSubBalance','propVacValue','propSubValue','christmas','gross','compensation','grand','t1','t2','t3','t4','t5','t6','t7'].forEach(id=>document.getElementById(id).textContent='—');
+  ['salaryDue','vacBalance','vacSubBalance','propVacValue','propSubValue','christmas','gross','compensation','grand','t1','t2','t3','t4','t5','t6','t7','t8','trainingValueSummary'].forEach(id=>document.getElementById(id).textContent='—');
   document.getElementById('compObservation').textContent='Selecione o motivo da cessação';
 }
 
