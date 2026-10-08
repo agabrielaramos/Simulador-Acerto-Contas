@@ -25,6 +25,16 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin-top:17px}th,td{p
   margin: 7mm;
 }
 
+.contract-duration{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:#eef3f7;
+  color:#111827;
+  font-size:14px;
+  font-weight:600;
+}
+
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -188,9 +198,10 @@ Simulador de compensação por cessação de contrato de trabalho
 <section class="card">
 <h2>1. Dados do contrato</h2>
 <div class="row">
-<div><label>Data de admissão</label><input id="admission" type="date"></div>
-<div><label>Data de cessação</label><input id="termination" type="date"></div>
+<div><label>Data de admissão</label><input id="admission" type="date" onchange="updateContractDuration()" oninput="updateContractDuration()"></div>
+<div><label>Data de cessação</label><input id="termination" type="date" onchange="updateContractDuration()" oninput="updateContractDuration()"></div>
 </div>
+<div class="contract-duration" id="contractDuration">Duração: —</div>
 <div class="row">
 <div><label>Retribuição base mensal (€)</label><input id="salary" type="number" min="0" step=".01"></div>
 <div><label>Diuturnidades (€)</label><input id="diut" type="number" min="0" step=".01"></div>
@@ -336,7 +347,6 @@ Simulador de compensação por cessação de contrato de trabalho
 <section class="card full">
 <h2>5. Valores do acerto</h2>
 <div class="results">
-<div class="metric"><span>Retribuição vencida do mês</span><strong id="salaryDue">—</strong></div>
 <div class="metric"><span>Retribuição — férias vencidas não gozadas</span><strong id="vacBalance">—</strong></div>
 <div class="metric"><span>Subsídio de férias — vencido</span><strong id="vacSubBalance">—</strong></div>
 <div class="metric"><span>Retribuição — férias proporcionais</span><strong id="propVacValue">—</strong></div>
@@ -616,7 +626,6 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
    Créditos de formação não ministrada: <b>${num(training.totalHours)} h × ${eur(training.hourly)}/h = ${eur(training.value)}</b>.
    ${document.getElementById('studentWorker').value==='sim' ? '<br><b>Trabalhador-estudante:</b> o resultado não deduz automaticamente horas de dispensa; estas devem ser quantificadas e comprovadas para serem imputadas ao mínimo de formação.' : ''}`;
 
- set('salaryDue',salaryDue);
  set('vacBalance',vacBalance);
  set('vacSubBalance',vestedSubBalance);
  set('propVacValue',propGross);
@@ -1097,6 +1106,37 @@ function toggleTerminationFields(){
   else hint.textContent='';
 }
 
+function formatContractDuration(admission, termination){
+  if(!admission || !termination) return '—';
+  const start=dateUTC(admission);
+  const end=dateUTC(termination);
+  if(end<start) return 'Data de cessação anterior à data de admissão';
+
+  let years=end.getUTCFullYear()-start.getUTCFullYear();
+  let months=end.getUTCMonth()-start.getUTCMonth();
+  let daysPart=end.getUTCDate()-start.getUTCDate();
+
+  if(daysPart<0){
+    months--;
+    const previousMonth=new Date(Date.UTC(end.getUTCFullYear(),end.getUTCMonth(),0));
+    daysPart += previousMonth.getUTCDate();
+  }
+  if(months<0){
+    years--;
+    months+=12;
+  }
+
+  return years+' ano(s) '+months+' mes(es) '+daysPart+' dia(s)';
+}
+
+function updateContractDuration(){
+  const el=document.getElementById('contractDuration');
+  if(!el) return;
+  const admission=document.getElementById('admission')?.value || '';
+  const termination=document.getElementById('termination')?.value || '';
+  el.textContent='Duração: '+formatContractDuration(admission,termination);
+}
+
 function monthsCompleted(a,b){
  const A=dateUTC(a),B=dateUTC(b);
  let m=(B.getUTCFullYear()-A.getUTCFullYear())*12+(B.getUTCMonth()-A.getUTCMonth());
@@ -1116,12 +1156,14 @@ function resetForm(){
   document.getElementById('suspBox').classList.add('hidden');
   ['earnedDays','takenDays','unusedDays','propDays','propTaken','propBalanceDays','trainingDueHours','trainingProvidedHours','trainingBalanceHours','trainingHourlyRate','trainingValue','trainingPeriod'].forEach(id=>document.getElementById(id).textContent='—');
   document.getElementById('logic').textContent='Preencha os dados do contrato e clique em "Calcular acerto".';
+  document.getElementById('contractDuration').textContent='Duração: —';
   ['salaryDue','vacBalance','vacSubBalance','propVacValue','propSubValue','christmas','gross','compensation','grand','t1','t2','t3','t4','t5','t6','t7','t8','trainingValueSummary'].forEach(id=>document.getElementById(id).textContent='—');
   document.getElementById('compObservation').textContent='Selecione o motivo da cessação';
 }
 
 toggleSusp();
 toggleTerminationFields();
+updateContractDuration();
 
 </script>
 </body></html>
