@@ -8,7 +8,7 @@
 :root{--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#667085;--line:#dfe3ea;--blue:#1769e0;--soft:#eef5ff;--warn:#fff7e6;--green:#067647}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;color:var(--ink)}
 .wrap{max-width:1120px;margin:28px auto;padding:0 18px}.hero{background:linear-gradient(135deg,#12315b,#1769e0);color:#fff;border-radius:18px;padding:28px;box-shadow:0 10px 28px #12315b22}
-h1{margin:0 0 7px;font-size:27px}.hero p{margin:0;opacity:.92}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 4px 15px #1018280a}.full{grid-column:1/-1}h2{font-size:18px;margin:0 0 14px}
+h1{margin:0 0 7px;font-size:27px}.hero h1 small{display:block;font-size:17px;font-weight:500;margin-top:5px;opacity:.92}.hero p{margin:0;opacity:.92}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 4px 15px #1018280a}.full{grid-column:1/-1}h2{font-size:18px;margin:0 0 14px}
 label{font-size:13px;font-weight:650;display:block;margin:11px 0 5px}input,select{width:100%;padding:10px 11px;border:1px solid #cfd5df;border-radius:8px;font-size:14px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint,.note{font-size:12px;color:var(--muted);line-height:1.5}.check{display:flex;align-items:center;gap:8px;margin:12px 0}.check input{width:auto}
 button{border:0;background:var(--blue);color:#fff;border-radius:9px;padding:12px 18px;font-weight:700;cursor:pointer}.secondary{background:#eef2f7;color:#344054}.actions{display:flex;gap:10px;margin-top:17px}
 .results{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.metric{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fafbfc}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;font-size:19px;margin-top:4px}.metric small{display:block;color:var(--muted);margin-top:4px}.total{background:var(--soft);border-color:#c9dcff}.total strong{color:var(--blue)}
@@ -177,7 +177,10 @@ table{width:100%;border-collapse:collapse;font-size:14px;margin-top:17px}th,td{p
 <body>
 <div class="wrap">
 <div class="hero">
-<h1>Simulador de compensação por cessação de contrato de trabalho (incluindo suspensão do contrato de trabalho)</h1>
+<h1>
+Simulador de compensação por cessação de contrato de trabalho
+<small>(incluindo suspensão do contrato de trabalho)</small>
+</h1>
 <p>Férias, subsídios e restantes créditos, com discriminação dos dias e dos valores já pagos.</p>
 </div>
 
