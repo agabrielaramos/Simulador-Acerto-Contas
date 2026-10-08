@@ -4,2661 +4,841 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Acerto de Contas — Cessação + Baixa Médica</title>
-
 <style>
-:root{
-  --bg:#f4f6fa;
-  --card:#fff;
-  --ink:#172033;
-  --muted:#667085;
-  --line:#dfe3ea;
-  --blue:#1769e0;
-  --soft:#eef5ff;
-  --warn:#fff7e6;
-  --green:#067647
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:var(--bg);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;
-  color:var(--ink)
-}
-
-.wrap{
-  max-width:1120px;
-  margin:28px auto;
-  padding:0 18px
-}
-
-.hero{
-  background:linear-gradient(135deg,#12315b,#1769e0);
-  color:#fff;
-  border-radius:18px;
-  padding:28px;
-  box-shadow:0 10px 28px #12315b22
-}
-
-h1{
-  margin:0 0 7px;
-  font-size:27px
-}
-
-.hero p{
-  margin:0;
-  opacity:.92
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-  margin-top:18px
-}
-
-.card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:20px;
-  box-shadow:0 4px 15px #1018280a
-}
-
-.full{
-  grid-column:1/-1
-}
-
-h2{
-  font-size:18px;
-  margin:0 0 14px
-}
-
-label{
-  font-size:13px;
-  font-weight:650;
-  display:block;
-  margin:11px 0 5px
-}
-
-input,select{
-  width:100%;
-  padding:10px 11px;
-  border:1px solid #cfd5df;
-  border-radius:8px;
-  font-size:14px;
-  background:#fff
-}
-
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px
-}
-
-.hint,.note{
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.5
-}
-
-.check{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin:12px 0
-}
-
-.check input{
-  width:auto
-}
-
-button{
-  border:0;
-  background:var(--blue);
-  color:#fff;
-  border-radius:9px;
-  padding:12px 18px;
-  font-weight:700;
-  cursor:pointer
-}
-
-.secondary{
-  background:#eef2f7;
-  color:#344054
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:17px
-}
-
-.results{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:11px
-}
-
-.metric{
-  border:1px solid var(--line);
-  border-radius:11px;
-  padding:13px;
-  background:#fafbfc
-}
-
-.metric span{
-  display:block;
-  color:var(--muted);
-  font-size:12px
-}
-
-.metric strong{
-  display:block;
-  font-size:19px;
-  margin-top:4px
-}
-
-.total{
-  background:var(--soft);
-  border-color:#c9dcff
-}
-
-.total strong{
-  color:var(--blue)
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-  margin-top:17px
-}
-
-th,td{
-  padding:9px;
-  border-bottom:1px solid var(--line);
-  text-align:right
-}
-
-th:first-child,
-td:first-child{
-  text-align:left
-}
-
-.warning{
-  background:var(--warn);
-  border:1px solid #f0d18d;
-  border-radius:9px;
-  padding:12px;
-  margin-top:15px;
-  font-size:12px;
-  line-height:1.5
-}
-
-.detail{
-  background:#f8fafc;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:13px;
-  margin-top:15px;
-  font-size:13px;
-  line-height:1.6
-}
-
-.hidden{
-  display:none
-}
-
-@media(max-width:760px){
-  .grid{
-    grid-template-columns:1fr
-  }
-
-  .full{
-    grid-column:auto
-  }
-
-  .results{
-    grid-template-columns:1fr 1fr
-  }
-
-  .row{
-    grid-template-columns:1fr
-  }
-}
+:root{--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#667085;--line:#dfe3ea;--blue:#1769e0;--soft:#eef5ff;--warn:#fff7e6;--green:#067647}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;color:var(--ink)}
+.wrap{max-width:1120px;margin:28px auto;padding:0 18px}.hero{background:linear-gradient(135deg,#12315b,#1769e0);color:#fff;border-radius:18px;padding:28px;box-shadow:0 10px 28px #12315b22}
+h1{margin:0 0 7px;font-size:27px}.hero p{margin:0;opacity:.92}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:20px;box-shadow:0 4px 15px #1018280a}.full{grid-column:1/-1}h2{font-size:18px;margin:0 0 14px}
+label{font-size:13px;font-weight:650;display:block;margin:11px 0 5px}input,select{width:100%;padding:10px 11px;border:1px solid #cfd5df;border-radius:8px;font-size:14px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hint,.note{font-size:12px;color:var(--muted);line-height:1.5}.check{display:flex;align-items:center;gap:8px;margin:12px 0}.check input{width:auto}
+button{border:0;background:var(--blue);color:#fff;border-radius:9px;padding:12px 18px;font-weight:700;cursor:pointer}.secondary{background:#eef2f7;color:#344054}.actions{display:flex;gap:10px;margin-top:17px}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.metric{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fafbfc}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;font-size:19px;margin-top:4px}.metric small{display:block;color:var(--muted);margin-top:4px}.total{background:var(--soft);border-color:#c9dcff}.total strong{color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:17px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
+.warning{background:var(--warn);border:1px solid #f0d18d;border-radius:9px;padding:12px;margin-top:15px;font-size:12px;line-height:1.5}.ok{color:var(--green);font-weight:700}
+.detail{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:15px;font-size:13px;line-height:1.6}.hidden{display:none}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.results{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
-
 <div class="wrap">
-
 <div class="hero">
 <h1>Acerto de Contas — Cessação com Baixa Médica</h1>
-<p>
-Férias, subsídios e restantes créditos, com discriminação dos dias,
-dos valores já pagos e da compensação aplicável à cessação.
-</p>
+<p>Férias, subsídios e restantes créditos, com discriminação dos dias e dos valores já pagos.</p>
 </div>
-
 
 <div class="grid">
-
-<!-- =====================================================
-     DADOS DO CONTRATO
-===================================================== -->
-
 <section class="card">
-
 <h2>1. Dados do contrato</h2>
-
 <div class="row">
-
-<div>
-<label>Data de admissão</label>
-<input id="admission" type="date">
+<div><label>Data de admissão</label><input id="admission" type="date"></div>
+<div><label>Data de cessação</label><input id="termination" type="date"></div>
 </div>
-
-<div>
-<label>Data de cessação</label>
-<input id="termination" type="date">
-</div>
-
-</div>
-
-
 <div class="row">
-
-<div>
-<label>Retribuição base mensal (€)</label>
-<input id="salary" type="number" min="0" step=".01">
+<div><label>Retribuição base mensal (€)</label><input id="salary" type="number" min="0" step=".01"></div>
+<div><label>Diuturnidades (€)</label><input id="diut" type="number" min="0" step=".01"></div>
 </div>
-
-<div>
-<label>Diuturnidades (€)</label>
-<input id="diut" type="number" min="0" step=".01">
-</div>
-
-</div>
-
-
 <div class="row">
-
-<div>
-<label>Outras componentes retributivas para férias (€)</label>
-<input id="extras" type="number" min="0" step=".01">
+<div><label>Outras componentes retributivas para férias (€)</label><input id="extras" type="number" min="0" step=".01"></div>
+<div><label>Dias de férias anuais</label><input id="vacDays" type="number" min="1" step="1"></div>
 </div>
-
-<div>
-<label>Dias de férias anuais</label>
-<input id="vacDays" type="number" min="1" step="1">
+<div class="row">
+<div><label>RMMG aplicável à cessação (€) — para limites da compensação</label><input id="rmmg" type="number" min="0" step=".01"></div>
+<div class="hint" style="align-self:end">Preencha apenas se quiser aplicar também os limites de 20× RMMG e 240× RMMG. Não é preenchido automaticamente.</div>
 </div>
-
-</div>
-
-
 <label>Tipo de contrato</label>
-
 <select id="contractType" onchange="toggleTerminationFields()">
-
-<option value="" selected>
-Selecione o tipo de contrato
-</option>
-
-<option value="sem_termo">
-Contrato sem termo
-</option>
-
-<option value="termo_certo">
-Contrato a termo certo
-</option>
-
-<option value="termo_incerto">
-Contrato a termo incerto
-</option>
-
+<option value="" selected>Selecione o tipo de contrato</option>
+<option value="sem_termo">Contrato sem termo</option>
+<option value="termo_certo">Contrato a termo certo</option>
+<option value="termo_incerto">Contrato a termo incerto</option>
 </select>
-
 
 <label>Motivo da cessação</label>
-
 <select id="reason" onchange="toggleTerminationFields()">
-
-<option value="" selected>
-Selecione o motivo da cessação
-</option>
-
-<option value="denuncia_trabalhador">
-Denúncia pelo trabalhador
-</option>
-
-<option value="resolucao_justa_causa">
-Resolução pelo trabalhador com justa causa
-</option>
-
-<option value="acordo">
-Revogação por acordo
-</option>
-
-<option value="caducidade_termo">
-Caducidade do contrato a termo
-</option>
-
-<option value="despedimento_coletivo">
-Despedimento coletivo
-</option>
-
-<option value="extincao_posto">
-Extinção do posto de trabalho
-</option>
-
-<option value="inadaptação">
-Despedimento por inadaptação
-</option>
-
-<option value="facto_trabalhador">
-Despedimento por facto imputável ao trabalhador
-</option>
-
-<option value="morte_extincao_empresa">
-Morte do empregador / extinção / encerramento da empresa
-</option>
-
-<option value="insolvencia">
-Insolvência / recuperação da empresa
-</option>
-
-<option value="reforma">
-Reforma do trabalhador
-</option>
-
-<option value="impossibilidade">
-Impossibilidade superveniente, absoluta e definitiva
-</option>
-
-<option value="outro">
-Outro
-</option>
-
+<option value="" selected>Selecione o motivo da cessação</option>
+<option value="denuncia_trabalhador">Denúncia pelo trabalhador</option>
+<option value="resolucao_justa_causa">Resolução pelo trabalhador com justa causa</option>
+<option value="resolucao_falta_pagamento">Resolução pelo trabalhador — falta não culposa de pagamento da retribuição</option>
+<option value="acordo">Revogação por acordo</option>
+<option value="caducidade_termo">Caducidade do contrato a termo</option>
+<option value="despedimento_coletivo">Despedimento coletivo</option>
+<option value="extincao_posto">Extinção do posto de trabalho</option>
+<option value="inadaptação">Despedimento por inadaptação</option>
+<option value="facto_trabalhador">Despedimento por facto imputável ao trabalhador</option>
+<option value="morte_extincao_empresa">Morte do empregador / extinção / encerramento da empresa</option>
+<option value="insolvencia">Insolvência / recuperação da empresa</option>
+<option value="reforma">Reforma do trabalhador</option>
+<option value="impossibilidade">Impossibilidade superveniente, absoluta e definitiva</option>
+<option value="outro">Outro</option>
 </select>
 
-
 <div id="compFields" class="hidden">
-
 <div class="row">
-
 <div id="agreementBox">
-
-<label>
-Compensação acordada (€)
-</label>
-
-<input
-id="agreementComp"
-type="number"
-min="0"
-step=".01"
->
-
+<label>Compensação acordada (€)</label>
+<input id="agreementComp" type="number" min="0" step=".01">
 </div>
-
-
 <div id="resolutionDaysBox">
-
-<label>
-Dias de retribuição por ano (15–45)
-</label>
-
-<input
-id="resolutionDays"
-type="number"
-min="15"
-max="45"
-step="1"
-value=""
->
-
+<label>Dias de retribuição por ano (15–45)</label>
+<input id="resolutionDays" type="number" min="15" max="45" step="1">
 </div>
-
 </div>
-
-
-<div
-class="hint"
-id="compHint">
+<div class="hint" id="compHint"></div>
 </div>
-
-</div>
-
-
 </section>
-
-
-<!-- =====================================================
-     SUSPENSÃO
-===================================================== -->
 
 <section class="card">
-
 <h2>2. Suspensão por doença</h2>
-
-
-<div class="check">
-
-<input
-id="hasSusp"
-type="checkbox"
-onchange="toggleSusp()"
->
-
-<label
-for="hasSusp"
-style="margin:0">
-
-Existiu impedimento prolongado / suspensão por doença?
-
-</label>
-
-</div>
-
-
+<div class="check"><input id="hasSusp" type="checkbox" onchange="toggleSusp()"><label for="hasSusp" style="margin:0">Existiu impedimento prolongado / suspensão por doença?</label></div>
 <div id="suspBox" class="hidden">
-
 <div class="row">
-
-<div>
-
-<label>
-Início da suspensão
-</label>
-
-<input
-id="suspStart"
-type="date"
->
-
+<div><label>Início da suspensão</label><input id="suspStart" type="date"></div>
+<div><label>Fim da suspensão / regresso</label><input id="suspEnd" type="date"></div>
 </div>
-
-
-<div>
-
-<label>
-Fim da suspensão / regresso
-</label>
-
-<input
-id="suspEnd"
-type="date"
->
-
+<div class="hint">Se a suspensão termina apenas com a cessação, deixe a data de fim em branco. O simulador considera como suspensão relevante o impedimento prolongado nos termos do art. 296.º.</div>
 </div>
-
-</div>
-
-
-<div class="hint">
-
-Se a suspensão termina apenas com a cessação,
-deixe a data de fim em branco.
-
-</div>
-
-</div>
-
-
 <div class="row">
-
-<div>
-
-<label>
-Férias já gozadas do direito vencido (dias)
-</label>
-
-<input
-id="vacTakenDays"
-type="number"
-min="0"
-step=".01"
->
-
+<div><label>Férias já gozadas do direito vencido (dias)</label><input id="vacTakenDays" type="number" min="0" step=".01"></div>
+<div><label>Férias proporcionais já gozadas no ano (dias)</label><input id="propTakenDays" type="number" min="0" step=".01"></div>
 </div>
-
-
-<div>
-
-<label>
-Férias proporcionais já gozadas no ano (dias)
-</label>
-
-<input
-id="propTakenDays"
-type="number"
-min="0"
-step=".01"
->
-
-</div>
-
-</div>
-
-
 <div class="row">
-
-<div>
-
-<label>
-Retribuição de férias já paga (€)
-</label>
-
-<input
-id="vacPaid"
-type="number"
-min="0"
-step=".01"
->
-
+<div><label>Retribuição de férias já paga (€)</label><input id="vacPaid" type="number" min="0" step=".01"></div>
+<div><label>Subsídio de férias vencido já pago (€)</label><input id="vacSubPaid" type="number" min="0" step=".01"></div>
 </div>
-
-
-<div>
-
-<label>
-Subsídio de férias vencido já pago (€)
-</label>
-
-<input
-id="vacSubPaid"
-type="number"
-min="0"
-step=".01"
->
-
-</div>
-
-</div>
-
-
 <div class="row">
-
-<div>
-
-<label>
-Subsídio de férias proporcional já pago (€)
-</label>
-
-<input
-id="propSubPaid"
-type="number"
-min="0"
-step=".01"
->
-
-</div>
-
+<div><label>Subsídio de férias proporcional já pago (€)</label><input id="propSubPaid" type="number" min="0" step=".01"></div>
 <div></div>
-
 </div>
-
-
-<div class="actions">
-
-<button onclick="calculate()">
-Calcular acerto
-</button>
-
-<button
-class="secondary"
-onclick="resetForm()">
-
-Limpar
-
-</button>
-
-</div>
-
+<div class="actions"><button onclick="calculate()">Calcular acerto</button><button class="secondary" onclick="resetForm()">Limpar</button></div>
 </section>
 
-
-<!-- =====================================================
-     FÉRIAS
-===================================================== -->
-
 <section class="card full">
-
 <h2>3. Férias — cálculo dos dias</h2>
-
-
 <div class="results">
-
-<div class="metric">
-
-<span>
-Férias vencidas
-</span>
-
-<strong id="earnedDays">
-—
-</strong>
-
+<div class="metric"><span>Férias vencidas (direito)</span><strong id="earnedDays">—</strong></div>
+<div class="metric"><span>Férias vencidas já gozadas</span><strong id="takenDays">—</strong></div>
+<div class="metric total"><span>Férias vencidas não gozadas</span><strong id="unusedDays">—</strong></div>
+<div class="metric"><span>Férias proporcionais do ano</span><strong id="propDays">—</strong></div>
+<div class="metric"><span>Proporcionais já gozados</span><strong id="propTaken">—</strong></div>
+<div class="metric total"><span>Proporcionais ainda devidos</span><strong id="propBalanceDays">—</strong></div>
 </div>
-
-
-<div class="metric">
-
-<span>
-Férias vencidas já gozadas
-</span>
-
-<strong id="takenDays">
-—
-</strong>
-
-</div>
-
-
-<div class="metric total">
-
-<span>
-Férias vencidas não gozadas
-</span>
-
-<strong id="unusedDays">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Férias proporcionais do ano
-</span>
-
-<strong id="propDays">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Proporcionais já gozados
-</span>
-
-<strong id="propTaken">
-—
-</strong>
-
-</div>
-
-
-<div class="metric total">
-
-<span>
-Proporcionais ainda devidos
-</span>
-
-<strong id="propBalanceDays">
-—
-</strong>
-
-</div>
-
-</div>
-
-
-<div
-class="detail"
-id="logic">
-
-Preencha os dados do contrato e clique em
-"Calcular acerto".
-
-</div>
-
+<div class="detail" id="logic">Preencha os dados do contrato e clique em "Calcular acerto".</div>
 </section>
 
-
-<!-- =====================================================
-     RESULTADOS
-===================================================== -->
-
 <section class="card full">
-
 <h2>4. Valores do acerto</h2>
-
-
 <div class="results">
-
-<div class="metric">
-
-<span>
-Retribuição vencida do mês
-</span>
-
-<strong id="salaryDue">
-—
-</strong>
-
+<div class="metric"><span>Retribuição vencida do mês</span><strong id="salaryDue">—</strong></div>
+<div class="metric"><span>Retribuição — férias vencidas não gozadas</span><strong id="vacBalance">—</strong></div>
+<div class="metric"><span>Subsídio de férias — vencido</span><strong id="vacSubBalance">—</strong></div>
+<div class="metric"><span>Retribuição — férias proporcionais</span><strong id="propVacValue">—</strong></div>
+<div class="metric"><span>Subsídio de férias — proporcional</span><strong id="propSubValue">—</strong></div>
+<div class="metric"><span>Subsídio de Natal</span><strong id="christmas">—</strong></div>
 </div>
-
-
-<div class="metric">
-
-<span>
-Retribuição — férias vencidas não gozadas
-</span>
-
-<strong id="vacBalance">
-—
-</strong>
-
+<div class="results" style="margin-top:12px">
+<div class="metric total"><span>Total bruto dos créditos</span><strong id="gross">—</strong></div>
+<div class="metric"><span>Compensação / indemnização</span><strong id="compensation">—</strong></div>
+<div class="metric total"><span>Total antes de descontos</span><strong id="grand">—</strong></div>
 </div>
-
-
-<div class="metric">
-
-<span>
-Subsídio de férias — vencido
-</span>
-
-<strong id="vacSubBalance">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Retribuição — férias proporcionais
-</span>
-
-<strong id="propVacValue">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Subsídio de férias — proporcional
-</span>
-
-<strong id="propSubValue">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Subsídio de Natal
-</span>
-
-<strong id="christmas">
-—
-</strong>
-
-</div>
-
-</div>
-
-
-<div
-class="results"
-style="margin-top:12px">
-
-<div class="metric total">
-
-<span>
-Total bruto dos créditos
-</span>
-
-<strong id="gross">
-—
-</strong>
-
-</div>
-
-
-<div class="metric">
-
-<span>
-Compensação / indemnização
-</span>
-
-<strong id="compensation">
-—
-</strong>
-
-</div>
-
-
-<div class="metric total">
-
-<span>
-Total antes de descontos
-</span>
-
-<strong id="grand">
-—
-</strong>
-
-</div>
-
-</div>
-
 
 <table>
-
-<thead>
-
-<tr>
-
-<th>
-Parcela
-</th>
-
-<th>
-Valor
-</th>
-
-<th>
-Observação
-</th>
-
-</tr>
-
-</thead>
-
-
+<thead><tr><th>Parcela</th><th>Valor</th><th>Observação</th></tr></thead>
 <tbody>
-
-<tr>
-
-<td>
-Retribuição vencida
-</td>
-
-<td id="t1">
-—
-</td>
-
-<td>
-Tempo efetivamente retribuído
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Férias vencidas não gozadas
-</td>
-
-<td id="t2">
-—
-</td>
-
-<td>
-Após abatimento das férias gozadas/pagas
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Subsídio de férias vencido
-</td>
-
-<td id="t3">
-—
-</td>
-
-<td>
-Após abatimento do já pago
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Férias proporcionais
-</td>
-
-<td id="t4">
-—
-</td>
-
-<td>
-Saldo ainda devido
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Subsídio de férias proporcional
-</td>
-
-<td id="t5">
-—
-</td>
-
-<td>
-Saldo ainda devido
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Subsídio de Natal
-</td>
-
-<td id="t6">
-—
-</td>
-
-<td>
-Proporcional ao tempo de serviço
-</td>
-
-</tr>
-
-
-<tr>
-
-<td>
-Compensação / indemnização
-</td>
-
-<td id="t7">
-—
-</td>
-
-<td id="compObservation">
-Selecione o motivo da cessação
-</td>
-
-</tr>
-
+<tr><td>Retribuição vencida</td><td id="t1">—</td><td>Tempo efetivamente retribuído</td></tr>
+<tr><td>Férias vencidas não gozadas</td><td id="t2">—</td><td>Após abatimento das férias gozadas/pagas</td></tr>
+<tr><td>Subsídio de férias vencido</td><td id="t3">—</td><td>Após abatimento do já pago</td></tr>
+<tr><td>Férias proporcionais</td><td id="t4">—</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de Natal</td><td id="t6">—</td><td>Proporcional ao tempo de serviço</td></tr>
+<tr><td>Compensação / indemnização</td><td id="t7">—</td><td id="compObservation">Selecione o motivo da cessação</td></tr>
 </tbody>
-
 </table>
 
-
-<div class="detail">
-
-<b>
-Fórmula dos proporcionais:
-</b>
-
-<br>
-
-vencimento ÷ número de dias do ano × dias efetivamente trabalhados.
-
-<br><br>
-
-Em 2026:
-
-<br>
-
-vencimento ÷ 365 × dias efetivamente trabalhados.
-
-<br><br>
-
-<b>
-Férias vencidas:
-</b>
-
-<br>
-
-vencimento ÷ 22 × dias de férias vencidas não gozadas.
-
-</div>
-
-
-<div class="warning">
-
-<b>Nota:</b>
-
-Os valores de compensação dependem do motivo concreto da cessação,
-do tipo de contrato, da antiguidade e, em determinados casos,
-das regras transitórias aplicáveis.
-
-O simulador apresenta a memória de cálculo para permitir a conferência.
-
-</div>
-
+<div class="detail"><b>Fórmula dos proporcionais:</b> vencimento ÷ número de dias do ano × dias efetivamente trabalhados. Em 2026: vencimento ÷ 365 × dias de serviço efetivo. As férias vencidas são calculadas separadamente: vencimento ÷ 22 × dias de férias vencidas não gozadas.</div>
+<div class="warning"><b>Importante:</b> esta versão separa expressamente os dias de férias vencidos dos proporcionais. O período de suspensão por doença não é tratado como “dias trabalhados” para o subsídio de Natal: o art. 263.º manda atender ao tempo de serviço prestado. Já no regime de férias, o art. 245.º tem uma regra especial quando a cessação ocorre após impedimento prolongado. O cálculo deve ser validado para o caso concreto e eventual instrumento de regulamentação coletiva.</div>
+<div class="note" style="margin-top:12px">Base legal consultada: Código do Trabalho, arts. 237.º, 239.º, 245.º, 263.º, 264.º e 296.º. citeturn0search9turn0search5turn0search1turn0search0turn0search8</div>
 </section>
-
 </div>
 </div>
-
 
 <script>
-
-/* =====================================================
-   FUNÇÕES GERAIS
-===================================================== */
-
-const eur = n =>
-new Intl.NumberFormat('pt-PT',{
-style:'currency',
-currency:'EUR'
-}).format(n || 0);
-
-
-const num = n =>
-new Intl.NumberFormat('pt-PT',{
-minimumFractionDigits:2,
-maximumFractionDigits:2
-}).format(n || 0);
-
-
-const v = id =>
-parseFloat(
-document.getElementById(id).value
-) || 0;
-
-
-const d = id =>
-document.getElementById(id).value;
-
-
-function dateUTC(s){
-
-const [y,m,day] =
-s.split('-').map(Number);
-
-return new Date(
-Date.UTC(y,m-1,day)
-);
-
-}
-
-
-function days(a,b){
-
-if(!a || !b)
-return 0;
-
-return Math.max(
-0,
-Math.floor(
-(dateUTC(b)-dateUTC(a))/86400000
-)+1
-);
-
-}
-
-
+const eur=n=>new Intl.NumberFormat('pt-PT',{style:'currency',currency:'EUR'}).format(n||0);
+const num=n=>new Intl.NumberFormat('pt-PT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0);
+const v=id=>parseFloat(document.getElementById(id).value)||0;
+const d=id=>document.getElementById(id).value;
+function dateUTC(s){const [y,m,day]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,day))}
+function days(a,b){if(!a||!b)return 0;return Math.max(0,Math.floor((dateUTC(b)-dateUTC(a))/86400000)+1)}
 function overlapDays(a,b,c,e){
-
-const start =
-dateUTC(a)>dateUTC(c)
-? a
-: c;
-
-const end =
-dateUTC(b)<dateUTC(e)
-? b
-: e;
-
-return end>=start
-? days(start,end)
-: 0;
-
+  const s=dateUTC(a)>dateUTC(c)?a:c, f=dateUTC(b)<dateUTC(e)?b:e;
+  return f>=s?days(s,f):0;
 }
-
-
-function set(id,val){
-
-document.getElementById(id)
-.textContent =
-typeof val === 'number'
-? eur(val)
-: val;
-
-}
-
-
-/* =====================================================
-   SUSPENSÃO
-===================================================== */
-
-function toggleSusp(){
-
-const checked =
-document.getElementById('hasSusp').checked;
-
-document
-.getElementById('suspBox')
-.classList.toggle(
-'hidden',
-!checked
-);
-
-}
-
-
-/* =====================================================
-   CAMPOS DA CESSAÇÃO
-===================================================== */
-
-function toggleTerminationFields(){
-
-const reason =
-document.getElementById('reason').value;
-
-const box =
-document.getElementById('compFields');
-
-const agreement =
-document.getElementById('agreementBox');
-
-const resolution =
-document.getElementById('resolutionDaysBox');
-
-const hint =
-document.getElementById('compHint');
-
-
-const needs =
-reason === 'acordo' ||
-reason === 'resolucao_justa_causa';
-
-
-box.classList.toggle(
-'hidden',
-!needs
-);
-
-
-agreement.classList.toggle(
-'hidden',
-reason !== 'acordo'
-);
-
-
-resolution.classList.toggle(
-'hidden',
-reason !== 'resolucao_justa_causa'
-);
-
-
-if(reason === 'acordo'){
-
-hint.textContent =
-'Introduza a compensação efetivamente acordada entre as partes.';
-
-}
-
-else if(reason === 'resolucao_justa_causa'){
-
-hint.textContent =
-'Indique entre 15 e 45 dias de retribuição por cada ano ou fração de antiguidade.';
-
-}
-
-else{
-
-hint.textContent='';
-
-}
-
-}
-
-
-/* =====================================================
-   MESES COMPLETOS
-===================================================== */
-
-function monthsCompleted(a,b){
-
-const A=dateUTC(a);
-const B=dateUTC(b);
-
-let m =
-(B.getUTCFullYear()-A.getUTCFullYear())*12+
-(B.getUTCMonth()-A.getUTCMonth());
-
-if(B.getUTCDate()<A.getUTCDate())
-m--;
-
-return Math.max(0,m);
-
-}
-
-
-/* =====================================================
-   COMPENSAÇÃO ART. 366
-===================================================== */
-
-function calcArt366(adm,term,baseDiut){
-
-const daily =
-baseDiut/30;
-
-const start =
-dateUTC(adm);
-
-const end =
-dateUTC(term);
-
-
-/*
-Regime anterior a 01/11/2011:
-18 dias por ano nos primeiros 3 anos
-12 dias por ano nos anos seguintes,
-com o limite global aplicável.
-*/
-
-if(start < dateUTC('2011-11-01')){
-
-let value=0;
-
-
-/*
-01/11/2011 a 31/10/2012:
-parte do regime transitório.
-*/
-
-const preEnd =
-dateUTC('2012-10-31');
-
-
-if(start <= preEnd){
-
-const firstEnd =
-end < preEnd
-? end
-: preEnd;
-
-const total =
-days(
-adm,
-firstEnd
-);
-
-value +=
-daily *
-18 *
-(total/365);
-
-}
-
-
-/*
-Depois do período transitório,
-aplica-se a regra de 14 dias.
-*/
-
-const transitionStart =
-dateUTC('2012-11-01');
-
-
-if(end >= transitionStart){
-
-const effectiveStart =
-start > transitionStart
-? start
-: transitionStart;
-
-const total =
-days(
-effectiveStart.toISOString().slice(0,10),
-term
-);
-
-value +=
-daily *
-14 *
-(total/365);
-
-}
-
-
-const min3 =
-baseDiut*3;
-
-const max12 =
-baseDiut*12;
-
-value =
-Math.max(
-value,
-min3
-);
-
-value =
-Math.min(
-value,
-max12
-);
-
-return value;
-
-}
-
-
-/*
-Contratos iniciados depois de 01/11/2011:
-14 dias por ano.
-*/
-
-const totalDays =
-days(adm,term);
-
-const value =
-daily *
-14 *
-(totalDays/365);
-
-const max12 =
-baseDiut*12;
-
-return Math.min(
-value,
-max12
-);
-
-}
-
-
-/* =====================================================
-   COMPENSAÇÃO CONTRATO A TERMO
-===================================================== */
-
-function calcTermCompensation(
-adm,
-term,
-baseDiut
-){
-
-const daily =
-baseDiut/30;
-
-
-/*
-Contratos iniciados depois
-de 01/11/2011.
-*/
-
-if(
-dateUTC(adm) >=
-dateUTC('2011-11-01')
-){
-
-return (
-daily *
-24 *
-(days(adm,term)/365)
-);
-
-}
-
-
-/*
-Regime transitório para contratos
-a termo antigos.
-*/
-
-const totalMonths =
-monthsCompleted(
-adm,
-term
-);
-
-const daysPerMonth =
-totalMonths <= 6
-? 3
-: 2;
-
-const transitionEnd =
-dateUTC('2012-10-31');
-
-let value=0;
-
-
-if(dateUTC(adm)<=transitionEnd){
-
-const firstEnd =
-dateUTC(term)<transitionEnd
-? dateUTC(term)
-: transitionEnd;
-
-const d =
-days(
-adm,
-firstEnd.toISOString().slice(0,10)
-);
-
-value +=
-daily *
-daysPerMonth *
-(d/30);
-
-}
-
-
-const after =
-dateUTC('2012-11-01');
-
-if(dateUTC(term)>=after){
-
-const effectiveStart =
-dateUTC(adm)>after
-? dateUTC(adm)
-: after;
-
-const d =
-days(
-effectiveStart.toISOString().slice(0,10),
-term
-);
-
-value +=
-daily *
-24 *
-(d/365);
-
-}
-
-return value;
-
-}
-
-
-/* =====================================================
-   COMPENSAÇÃO POR MOTIVO
-===================================================== */
-
-function calculateCompensation(
-adm,
-term,
-baseDiut,
-contractType,
-reason
-){
-
-if(!adm || !term)
-return 0;
-
-
-/*
-Denúncia pelo trabalhador:
-não há compensação.
-*/
-
-if(
-reason ===
-'denuncia_trabalhador'
-){
-
-return 0;
-
-}
-
-
-/*
-Despedimento por facto imputável
-ao trabalhador:
-não há compensação.
-*/
-
-if(
-reason ===
-'facto_trabalhador'
-){
-
-return 0;
-
-}
-
-
-/*
-Acordo:
-valor introduzido pelo utilizador.
-*/
-
-if(
-reason ===
-'acordo'
-){
-
-return Math.max(
-0,
-v('agreementComp')
-);
-
-}
-
-
-/*
-Resolução pelo trabalhador
-com justa causa.
-*/
-
-if(
-reason ===
-'resolucao_justa_causa'
-){
-
-let rate =
-v('resolutionDays');
-
-if(rate<15)
-rate=15;
-
-if(rate>45)
-rate=45;
-
-const daily =
-baseDiut/30;
-
-let value =
-daily *
-rate *
-(days(adm,term)/365);
-
-
-/*
-Mínimo de três meses.
-*/
-
-const minimum =
-baseDiut*3;
-
-return Math.max(
-value,
-minimum
-);
-
-}
-
-
-/*
-Caducidade de contrato a termo.
-*/
-
-if(
-reason ===
-'caducidade_termo'
-){
-
-if(
-contractType === 'termo_certo' ||
-contractType === 'termo_incerto'
-){
-
-return calcTermCompensation(
-adm,
-term,
-baseDiut
-);
-
-}
-
-return 0;
-
-}
-
-
-/*
-Despedimento coletivo,
-extinção do posto,
-inadaptação,
-e outras situações
-abrangidas pelo art. 366.º.
-*/
-
-if(
-reason ===
-'despedimento_coletivo' ||
-reason ===
-'extincao_posto' ||
-reason ===
-'inadaptação'
-){
-
-return calcArt366(
-adm,
-term,
-baseDiut
-);
-
-}
-
-
-/*
-Morte/extinção/encerramento
-e insolvência:
-para o simulador,
-usa-se a referência do art. 366.º.
-*/
-
-if(
-reason ===
-'morte_extincao_empresa' ||
-reason ===
-'insolvencia'
-){
-
-return calcArt366(
-adm,
-term,
-baseDiut
-);
-
-}
-
-
-/*
-Impossibilidade superveniente:
-não é automaticamente assumida
-como compensação.
-*/
-
-if(
-reason ===
-'impossibilidade'
-){
-
-return 0;
-
-}
-
-
-/*
-Reforma:
-não é automaticamente assumida
-como compensação.
-
-*/
-
-if(
-reason ===
-'reforma'
-){
-
-return 0;
-
-}
-
-
-/*
-Outro:
-0 até existir parametrização.
-*/
-
-return 0;
-
-}
-
-
-/* =====================================================
-   DESCRIÇÃO DA COMPENSAÇÃO
-===================================================== */
-
-function compensationDescription(
-reason,
-contractType
-){
-
-if(reason==='denuncia_trabalhador')
-return 'Sem compensação pela cessação.';
-
-
-if(reason==='facto_trabalhador')
-return 'Sem compensação pela cessação imputável ao trabalhador.';
-
-
-if(reason==='acordo')
-return 'Valor introduzido como compensação acordada.';
-
-
-if(reason==='resolucao_justa_causa')
-return 'Calculada entre 15 e 45 dias/ano, conforme valor indicado, respeitando o mínimo legal.';
-
-
-if(reason==='caducidade_termo')
-return contractType==='termo_certo' ||
-contractType==='termo_incerto'
-? 'Calculada segundo o regime aplicável à caducidade do contrato a termo.'
-: 'Tipo de contrato incompatível com esta opção.';
-
-
-if(
-reason==='despedimento_coletivo' ||
-reason==='extincao_posto' ||
-reason==='inadaptação'
-)
-return 'Calculada segundo a regra do art. 366.º e regime transitório aplicável.';
-
-
-if(
-reason==='morte_extincao_empresa' ||
-reason==='insolvencia'
-)
-return 'Calculada segundo a regra legal aplicável, usando a referência do art. 366.º.';
-
-
-if(reason==='reforma')
-return 'Sem compensação automática calculada nesta versão.';
-
-
-if(reason==='impossibilidade')
-return 'Sem compensação automática calculada nesta versão.';
-
-
-if(reason==='outro')
-return 'Motivo sem parametrização automática.';
-
-
-return 'Selecione o motivo da cessação.';
-
-}
-
-
-/* =====================================================
-   CÁLCULO PRINCIPAL
-===================================================== */
+function monthFrac(start,end){return Math.max(0,days(start,end)/30)}
+function set(id,val){document.getElementById(id).textContent=typeof val==='number'?eur(val):val}
+function toggleSusp(){document.getElementById('suspBox').classList.toggle('hidden',!document.getElementById('hasSusp').checked)}
 
 function calculate(){
+ const adm=d('admission'), term=d('termination');
+ if(!adm||!term){alert('Preencha a data de admissão e a data de cessação.');return}
+ if(dateUTC(term)<dateUTC(adm)){alert('A cessação não pode ser anterior à admissão.');return}
 
-const adm =
-d('admission');
+ const monthly=v('salary')+v('diut')+v('extras');
+ const vacAnnual=v('vacDays');
+ const y=term.slice(0,4), yearStart=y+'-01-01';
 
-const term =
-d('termination');
+ const has=document.getElementById('hasSusp').checked;
+ const ss=has?d('suspStart'):'';
+ let se=has?d('suspEnd'):'';
+ if(has && !ss){alert('Indique o início da suspensão.');return}
+ if(has && !se) se=term;
 
-if(!adm || !term){
+ const takenDays=Math.max(0,v('vacTakenDays'));
+ const propTakenDays=Math.max(0,v('propTakenDays'));
+ const vacPaid=Math.max(0,v('vacPaid'));
+ const vacSubPaid=Math.max(0,v('vacSubPaid'));
+ const propSubPaid=Math.max(0,v('propSubPaid'));
 
-alert(
-'Preencha a data de admissão e a data de cessação.'
-);
+ /*
+   1) FÉRIAS VENCIDAS:
+      Se o trabalhador já tinha direito aos 22 dias vencidos em 1/1,
+      esses 22 dias são uma "bolsa" independente do proporcional do ano.
+      Ex.: 22 - 1 gozado = 21 dias a pagar.
+   2) PROPORCIONAIS:
+      Para o cenário pedido, apuramos o tempo de serviço efetivamente
+      prestado no ano da cessação. A proporção dos 22 dias é:
+         22 × dias de serviço / dias do ano
+      e o mesmo período é aplicado à retribuição e ao subsídio de férias.
+   3) NATAL:
+      A mesma janela de serviço efetivo é usada, em conformidade com o art. 263.º.
+   4) BAIXA prolongada:
+      O art. 245.º, n.º 4, tem uma regra especial quando a cessação ocorre
+      após impedimento prolongado; o resultado dessa situação é identificado
+      na memória de cálculo, sem misturá-lo com os proporcionais normais.
+ */
 
-return;
+ let serviceStart=yearStart;
+ let serviceEnd=term;
 
+ // If admission occurs during termination year, service starts on admission.
+ if(dateUTC(adm)>dateUTC(serviceStart)) serviceStart=adm;
+
+ let serviceDays=days(serviceStart,serviceEnd);
+
+ // Exclude suspension days from the effective-service window.
+ if(has && ss){
+   const overlap=overlapDays(yearStart,term,ss,se);
+   serviceDays=Math.max(0,serviceDays-overlap);
+ }
+
+ const yearLen=(Number(y)%4===0?366:365);
+
+ // Vencidas: in a normal multi-year contract, full annual entitlement is already vested.
+ // If the contract started in the same year, there is no prior-year 22-day bucket.
+ let earnedDays=0;
+ if(adm.slice(0,4)!==y){
+   earnedDays=vacAnnual;
+ } else {
+   // First-year / contract <= 12 months: proportional entitlement.
+   earnedDays=Math.min(vacAnnual, vacAnnual*serviceDays/yearLen);
+ }
+
+ // Férias vencidas: nunca podem ultrapassar o direito anual introduzido.
+// Ex.: 22 dias de direito - 1 dia gozado = 21 dias a pagar.
+const vestedEntitlement=Math.min(vacAnnual, Math.max(0,earnedDays));
+const unusedDays=Math.min(vestedEntitlement, Math.max(0,vestedEntitlement-takenDays));
+
+// Proportional entitlement for the termination year.
+ // For a multi-year contract, this is based on effective service in the year.
+ let propDays=vacAnnual*serviceDays/yearLen;
+
+ // If this is the first calendar year of the contract, don't duplicate the same entitlement.
+ if(adm.slice(0,4)===y) propDays=0;
+
+ // If there was a prolonged suspension and termination follows it, art.245(4)
+ // creates a special rule tied to service in the year suspension began.
+ let specialText='';
+ if(has && ss && days(ss,se)>30){
+   const sy=ss.slice(0,4);
+   const specialStart=(adm.slice(0,4)===sy)?adm:sy+'-01-01';
+   const specialServiceDays=Math.max(0,days(specialStart,ss)-1);
+   const specialYearLen=(Number(sy)%4===0?366:365);
+   const specialDays=vacAnnual*specialServiceDays/specialYearLen;
+   specialText=` <b>Atenção à regra especial da baixa prolongada:</b> suspensão iniciada em ${sy}; o art. 245.º, n.º 4, exige apuramento próprio das férias/subsídio correspondentes ao tempo de serviço no ano em que começou a suspensão (${num(specialDays)} dias). Este valor deve ser tratado separadamente para evitar dupla contagem.`;
+ }
+
+ // Days already used from proportional bucket.
+ const propBalanceDays=Math.max(0,propDays-propTakenDays);
+
+ // Monetary value per vacation day.
+ // Fórmula das férias vencidas não gozadas:
+// (vencimento relevante / número de dias de férias anuais) × dias não gozados.
+// Assim, se o direito é 22 dias e foi gozado 1 dia, são pagos 21 dias.
+const perDay=monthly/vacAnnual;
+const vacGross=Math.min(monthly, perDay*unusedDays);
+
+// Proporcionais: ACT-style formula
+// (vencimento / número de dias do ano) × dias efetivamente trabalhados.
+const propGross=(monthly/yearLen)*serviceDays;
+const propSubGross=propGross;
+
+ // Subsídio de férias vencido e proporcional são rubricas independentes.
+ const vestedSubBalance=Math.max(0,vacGross-Math.min(vacGross,vacSubPaid));
+ const proportionalSubBalance=Math.max(0,propSubGross-propSubPaid);
+ const totalSubGross=vacGross+propSubGross;
+ const totalSubBalance=vestedSubBalance+proportionalSubBalance;
+
+ // Vacation remuneration already paid is deducted from vacation remuneration only.
+ // Separar rigorosamente férias vencidas das férias proporcionais.
+// O campo "Férias vencidas não gozadas" NUNCA inclui os proporcionais.
+const paidAgainstVested=Math.min(vacGross,vacPaid);
+const remainingPaidForProportional=Math.max(0,vacPaid-paidAgainstVested);
+const vacBalance=Math.max(0,vacGross-paidAgainstVested);
+const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
+
+ // Salary in termination month: only calendar days outside suspension.
+ const month=term.slice(5,7);
+ const monthStart=y+'-'+month+'-01';
+ const monthLen=new Date(Number(y),Number(month),0).getDate();
+ let paidCalendarDays=Number(term.slice(8));
+ if(has&&ss) paidCalendarDays=Math.max(0,paidCalendarDays-overlapDays(monthStart,term,ss,se));
+ const salaryDue=monthly*paidCalendarDays/monthLen;
+
+ // Christmas: effective service days in the termination year.
+ const christmas=monthly*serviceDays/yearLen;
+
+ const reason=document.getElementById('reason').value;
+ const contractType=document.getElementById('contractType').value;
+ const baseDiut=Math.max(0,v('salary')+v('diut'));
+
+ // Compensações previstas na lei. O cálculo usa a retribuição base + diuturnidades,
+ // que é a base indicada no art. 366.º. As restantes componentes não entram aqui.
+ const compensationResult=calculateCompensation(adm,term,baseDiut,contractType,reason);
+ const compensation=compensationResult.value;
+ const gross=salaryDue+vacBalance+propGross+totalSubBalance+christmas;
+ const grand=gross+compensation;
+
+ document.getElementById('earnedDays').textContent=num(earnedDays)+' dias';
+ document.getElementById('takenDays').textContent=num(takenDays)+' dias';
+ document.getElementById('unusedDays').textContent=num(unusedDays)+' dias';
+ document.getElementById('propDays').textContent=num(propDays)+' dias';
+ document.getElementById('propTaken').textContent=num(propTakenDays)+' dias';
+ document.getElementById('propBalanceDays').textContent=num(propBalanceDays)+' dias';
+
+ const specialNote=specialText||' Não existe, neste cenário, uma suspensão prolongada a exigir a regra especial do art. 245.º, n.º 4.';
+ document.getElementById('logic').innerHTML=
+ `<b>Memória de cálculo:</b><br>
+ Período de serviço efetivo no ano da cessação: <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(yearStart,term,ss,se))+' dias de suspensão)':''}.<br>
+ Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> a pagar.<br>
+ Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; menos ${num(propTakenDays)} dias já gozados = <b>${num(propBalanceDays)} dias</b>.<br>
+ Valor diário das férias vencidas: <b>${eur(monthly)} / ${num(vacAnnual)} = ${eur(perDay)}</b>.<br>
+Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
+ Retribuição de férias proporcional (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias = ${eur(propGross)}</b>.<br>
+ Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
+ Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(proportionalSubBalance)}</b>.<br>
+ Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
+ <br><b>Compensação / indemnização:</b><br>
+ ${getCompensationFormula(adm,term,baseDiut,contractType,reason,compensation)}
+ ${specialNote}`;
+
+ set('salaryDue',salaryDue);
+ set('vacBalance',vacBalance);
+ set('vacSubBalance',vestedSubBalance);
+ set('propVacValue',propGross);
+ set('propSubValue',proportionalSubBalance);
+ set('christmas',christmas);
+ set('gross',gross);
+ set('compensation',compensation);
+ document.getElementById('compObservation').textContent=compensationResult.note;
+ document.getElementById('compensation').title=compensationResult.note;
+ set('grand',grand);
+ set('t1',salaryDue);
+ set('t2',vacBalance);
+set('t3',vestedSubBalance);
+set('t4',propGross);
+set('t5',Math.max(0,propSubGross-propSubPaid));
+ set('t6',christmas);
+ set('t7',compensation);
 }
 
 
-if(
-dateUTC(term) <
-dateUTC(adm)
-){
+function getCompensationFormula(adm,term,baseDiut,contractType,reason,totalValue){
+  if(!reason) return 'Sem motivo de cessação selecionado.';
 
-alert(
-'A data de cessação não pode ser anterior à data de admissão.'
-);
+  const daily=baseDiut/30;
+  const rmmg=v('rmmg');
+  const cappedBase=rmmg>0 ? Math.min(baseDiut,rmmg*20) : baseDiut;
+  const cappedDaily=cappedBase/30;
+  const globalCap=rmmg>0 ? Math.min(baseDiut*12,rmmg*240) : baseDiut*12;
+  const d365=(a,b)=>days(a,b)/365;
+  const fmt=(x)=>eur(x);
 
-return;
+  if(reason==='denuncia_trabalhador')
+    return '<b>Sem compensação:</b> €0,00.';
 
+  if(reason==='facto_trabalhador')
+    return '<b>Sem compensação:</b> €0,00, por despedimento imputável ao trabalhador.';
+
+  if(reason==='acordo')
+    return '<b>Compensação acordada:</b> valor introduzido pelas partes = <b>'+fmt(totalValue)+'</b>.';
+
+  if(reason==='resolucao_justa_causa'){
+    const rate=Math.min(45,Math.max(15,v('resolutionDays')||15));
+    const years=days(adm,term)/365;
+    const raw=daily*rate*years;
+    const minimum=baseDiut*3;
+    return '<b>Art. 396.º:</b> ('+fmt(baseDiut)+' ÷ 30) × '+num(rate)+' dias × '+num(years)+' anos = <b>'+fmt(raw)+'</b>.'+
+      ' Mínimo legal: '+fmt(minimum)+'. Valor considerado: <b>'+fmt(totalValue)+'</b>.';
+  }
+
+  if(reason==='resolucao_falta_pagamento'){
+    return getArt366Formula(adm,term,baseDiut,totalValue,cappedBase,cappedDaily,globalCap);
+  }
+
+  if(['despedimento_coletivo','extincao_posto','inadaptação','morte_extincao_empresa','insolvencia'].includes(reason)){
+    return getArt366Formula(adm,term,baseDiut,totalValue,cappedBase,cappedDaily,globalCap);
+  }
+
+  if(reason==='caducidade_termo'){
+    const raw=daily*24*(days(adm,term)/365);
+    return '<b>Caducidade do contrato a termo:</b> ('+fmt(baseDiut)+' ÷ 30) × 24 dias × '+num(days(adm,term)/365)+' anos = <b>'+fmt(raw)+'</b>, sujeito ao regime transitório quando aplicável. Valor considerado: <b>'+fmt(totalValue)+'</b>.';
+  }
+
+  return '<b>Sem fórmula automática:</b> valor considerado <b>'+fmt(totalValue)+'</b>.';
 }
 
+function getArt366Formula(adm,term,baseDiut,totalValue,cappedBase,cappedDaily,globalCap){
+  const start=dateUTC(adm), end=dateUTC(term);
+  const oldCutoff=dateUTC('2011-11-01');
+  const transitionCutoff=dateUTC('2013-10-01');
+  const currentCutoff=dateUTC('2023-05-01');
+  const parts=[];
+  let raw=0;
+  const add=(label,amount)=>{ if(amount>0) parts.push(label+' = <b>'+eur(amount)+'</b>'); raw+=amount; };
 
-const contractType =
-document.getElementById(
-'contractType'
-).value;
+  if(start<oldCutoff){
+    const e1=end<dateUTC('2012-10-31')?end:dateUTC('2012-10-31');
+    if(start<=e1) add('10/09/2018'.slice(0,0)+'Até 31/10/2012: '+eur(baseDiut)+' × ('+num(days(adm,e1.toISOString().slice(0,10))/365)+')', baseDiut*(days(adm,e1.toISOString().slice(0,10))/365));
 
+    const s2=start>dateUTC('2012-11-01')?start:dateUTC('2012-11-01');
+    const e2=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    if(s2<=e2) add('01/11/2012–30/09/2013: ('+eur(cappedBase)+' ÷ 30) × 20 × '+num(days(s2.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365), cappedDaily*20*(days(s2.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365));
 
-const reason =
-document.getElementById(
-'reason'
-).value;
+    const s3=start>transitionCutoff?start:transitionCutoff;
+    const e3=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
+    if(s3<=e3){
+      const had3=addYears(start,3)<=transitionCutoff;
+      if(!had3){
+        const ann=addYears(start,3);
+        const e31=e3<ann?e3:ann;
+        if(s3<=e31) add('01/10/2013–primeiros 3 anos: ('+eur(cappedBase)+' ÷ 30) × 18 × '+num(days(s3.toISOString().slice(0,10),e31.toISOString().slice(0,10))/365), cappedDaily*18*(days(s3.toISOString().slice(0,10),e31.toISOString().slice(0,10))/365));
+        if(e3>ann){ const s32=new Date(ann.getTime()+86400000); add('Período seguinte até 30/04/2023: ('+eur(cappedBase)+' ÷ 30) × 12 × '+num(days(s32.toISOString().slice(0,10),e3.toISOString().slice(0,10))/365), cappedDaily*12*(days(s32.toISOString().slice(0,10),e3.toISOString().slice(0,10))/365)); }
+      } else add('01/10/2013–30/04/2023: ('+eur(cappedBase)+' ÷ 30) × 12 × '+num(days(s3.toISOString().slice(0,10),e3.toISOString().slice(0,10))/365), cappedDaily*12*(days(s3.toISOString().slice(0,10),e3.toISOString().slice(0,10))/365));
+    }
+  } else if(start<transitionCutoff){
+    const e1=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    if(start<=e1) add('Até 30/09/2013: ('+eur(cappedBase)+' ÷ 30) × 20 × '+num(days(adm,e1.toISOString().slice(0,10))/365), cappedDaily*20*(days(adm,e1.toISOString().slice(0,10))/365));
+    const s2=start>transitionCutoff?start:transitionCutoff;
+    const e2=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
+    if(s2<=e2){
+      const had3=addYears(start,3)<=transitionCutoff;
+      if(!had3){ const ann=addYears(start,3); const e21=e2<ann?e2:ann; if(s2<=e21) add('01/10/2013–primeiros 3 anos: ('+eur(cappedBase)+' ÷ 30) × 18 × '+num(days(s2.toISOString().slice(0,10),e21.toISOString().slice(0,10))/365), cappedDaily*18*(days(s2.toISOString().slice(0,10),e21.toISOString().slice(0,10))/365)); if(e2>ann){const s22=new Date(ann.getTime()+86400000); add('Período seguinte até 30/04/2023: ('+eur(cappedBase)+' ÷ 30) × 12 × '+num(days(s22.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365), cappedDaily*12*(days(s22.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365));}}
+      else add('01/10/2013–30/04/2023: ('+eur(cappedBase)+' ÷ 30) × 12 × '+num(days(s2.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365), cappedDaily*12*(days(s2.toISOString().slice(0,10),e2.toISOString().slice(0,10))/365));
+    }
+  } else {
+    const e1=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
+    if(start<=e1) add('Até 30/04/2023: ('+eur(cappedBase)+' ÷ 30) × 12 × '+num(days(adm,e1.toISOString().slice(0,10))/365), cappedDaily*12*(days(adm,e1.toISOString().slice(0,10))/365));
+  }
 
+  if(end>=currentCutoff){
+    const s=end>=currentCutoff && start>currentCutoff?start:currentCutoff;
+    add('Desde 01/05/2023: ('+eur(cappedBase)+' ÷ 30) × 14 × '+num(days(s.toISOString().slice(0,10),term)/365), cappedDaily*14*(days(s.toISOString().slice(0,10),term)/365));
+  }
 
-if(!contractType){
-
-alert(
-'Selecione o tipo de contrato.'
-);
-
-return;
-
+  let text=parts.join('<br>') || 'Sem período de compensação calculável.';
+  if(cappedBase<baseDiut) text+='<br><b>Base limitada:</b> '+eur(baseDiut)+' → '+eur(cappedBase)+' (limite de 20 × RMMG).';
+  if(raw>globalCap) text+='<br><b>Limite global aplicado:</b> '+eur(globalCap)+'.';
+  text+='<br><b>Total da compensação considerada: '+eur(totalValue)+'</b>.';
+  return text;
 }
 
+function calculateCompensation(adm,term,baseDiut,contractType,reason){
+  if(!reason) return {value:0,note:'Selecione o motivo da cessação'};
 
-if(!reason){
+  if(reason==='denuncia_trabalhador' || reason==='facto_trabalhador' || reason==='reforma' || reason==='impossibilidade'){
+    return {value:0,note:'Sem compensação legal automática para este motivo (sem prejuízo de créditos ou de regras especiais aplicáveis).'};
+  }
 
-alert(
-'Selecione o motivo da cessação.'
-);
+  if(reason==='acordo'){
+    const agreed=Math.max(0,v('agreementComp'));
+    return {value:agreed,note:'Valor introduzido como compensação acordada entre as partes.'};
+  }
 
-return;
+  if(reason==='resolucao_justa_causa'){
+    const daysPerYear=Math.min(45,Math.max(15,v('resolutionDays')||15));
+    const years=days(adm,term)/365;
+    const daily=baseDiut/30;
+    let value=daily*daysPerYear*years;
+    const minimum=baseDiut*3;
+    if(value<minimum) value=minimum;
+    return {value,note:`Art. 396.º: ${num(daysPerYear)} dias por ano; fração proporcional; mínimo de 3 meses de retribuição base + diuturnidades.`};
+  }
 
+  if(reason==='caducidade_termo'){
+    if(contractType==='sem_termo') return {value:0,note:'A caducidade por termo exige contrato a termo certo ou incerto.'};
+    const totalDays=days(adm,term);
+    if(totalDays<=0 || baseDiut<=0) return {value:0,note:'Sem base de cálculo suficiente.'};
+    // Regime atual: 24 dias por ano de antiguidade, proporcional à fração.
+    // Para contratos muito antigos (anteriores a 1/11/2011), há regime transitório próprio.
+    const value=calcTermCompensation(adm,term,baseDiut,contractType);
+    return {value,note:'Caducidade do contrato a termo: 24 dias por ano, proporcional à fração, salvo regime transitório aplicável a contratos antigos.'};
+  }
+
+  if(reason==='resolucao_falta_pagamento'){
+    const value=calc366Compensation(adm,term,baseDiut);
+    return {value,note:'Resolução pelo trabalhador por falta não culposa de pagamento da retribuição: compensação calculada nos termos do art. 366.º.'};
+  }
+
+  if(['despedimento_coletivo','extincao_posto','inadaptação','morte_extincao_empresa','insolvencia'].includes(reason)){
+    const value=calc366Compensation(adm,term,baseDiut);
+    return {value,note:'Compensação calculada nos termos do art. 366.º, incluindo o regime transitório quando aplicável e a alteração para 14 dias desde 01/05/2023.'};
+  }
+
+  if(reason==='outro'){
+    return {value:0,note:'Este motivo requer parametrização específica; não foi atribuída compensação automática.'};
+  }
+
+  return {value:0,note:'Sem compensação automática definida para este motivo.'};
 }
 
+function calc366Compensation(adm,term,baseDiut){
+  if(!baseDiut) return 0;
 
-const salary =
-v('salary');
+  const dailyRaw=baseDiut/30;
+  const start=dateUTC(adm);
+  const end=dateUTC(term);
+  const oldCutoff=dateUTC('2011-11-01');
+  const transitionCutoff=dateUTC('2013-10-01');
+  const currentCutoff=dateUTC('2023-05-01');
+  const rmmg=v('rmmg');
 
-const diut =
-v('diut');
+  /*
+    Regra geral / art. 366.º:
+    - até 30/04/2023: 12 dias por ano;
+    - desde 01/05/2023: 14 dias por ano.
 
-const extras =
-v('extras');
+    Regime transitório da Lei 69/2013 para contratos sem termo
+    celebrados antes de 01/10/2013:
+    - antes de 01/11/2012: 1 mês por ano;
+    - 01/11/2012 a 30/09/2013: 20 dias/ano;
+    - desde 01/10/2013: 18 dias nos primeiros 3 anos do contrato,
+      quando em 01/10/2013 ainda não tinham sido completados 3 anos,
+      e 12 dias nos anos subsequentes.
+    A partir de 01/05/2023, o novo art. 366.º aplica 14 dias ao período
+    contratual posterior a essa data.
+  */
 
+  const cappedBase=rmmg>0
+    ? Math.min(baseDiut,rmmg*20)
+    : baseDiut;
+  const dailyCapped=cappedBase/30;
 
-const monthly =
-salary +
-diut +
-extras;
+  const globalCap=rmmg>0
+    ? Math.min(baseDiut*12,rmmg*240)
+    : baseDiut*12;
 
+  let total=0;
 
-const baseDiut =
-salary +
-diut;
+  function proportionalDays(a,b){
+    if(a>b) return 0;
+    return days(a,b)/365;
+  }
 
+  if(start<oldCutoff){
+    // Fase 1: até 31/10/2012 — 1 mês por ano (ou fração proporcional).
+    const p1Start=start;
+    const p1End=end<dateUTC('2012-10-31')?end:dateUTC('2012-10-31');
+    if(p1Start<=p1End){
+      total += baseDiut*proportionalDays(
+        adm,
+        p1End.toISOString().slice(0,10)
+      );
+    }
 
-const vacAnnual =
-v('vacDays');
+    // Se a fase 1 já atingir o limite global, não se acrescentam as fases seguintes.
+    if(total>=globalCap){
+      return Math.min(total,globalCap);
+    }
 
+    // Fase 2: 01/11/2012 a 30/09/2013 — 20 dias/ano.
+    const p2Start=start>dateUTC('2012-11-01')?start:dateUTC('2012-11-01');
+    const p2End=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    if(p2Start<=p2End){
+      total += dailyCapped*20*proportionalDays(
+        p2Start.toISOString().slice(0,10),
+        p2End.toISOString().slice(0,10)
+      );
+    }
 
-if(monthly<=0){
+    if(total>=globalCap){
+      return Math.min(total,globalCap);
+    }
 
-alert(
-'Indique a retribuição mensal.'
-);
+    // Fase 3: 01/10/2013 até 30/04/2023 — 18/12 dias conforme a antiguidade.
+    const p3Start=start>transitionCutoff?start:transitionCutoff;
+    const p3End=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
 
-return;
+    if(p3Start<=p3End){
+      const hadThreeYearsOn2013 = addYears(start,3) <= transitionCutoff;
 
+      if(!hadThreeYearsOn2013){
+        const anniversary=addYears(start,3);
+        const firstEnd=p3End<anniversary?p3End:anniversary;
+        if(p3Start<=firstEnd){
+          total += dailyCapped*18*proportionalDays(
+            p3Start.toISOString().slice(0,10),
+            firstEnd.toISOString().slice(0,10)
+          );
+        }
+        if(p3End>anniversary){
+          const secondStart=new Date(anniversary.getTime()+86400000);
+          total += dailyCapped*12*proportionalDays(
+            secondStart.toISOString().slice(0,10),
+            p3End.toISOString().slice(0,10)
+          );
+        }
+      }else{
+        total += dailyCapped*12*proportionalDays(
+          p3Start.toISOString().slice(0,10),
+          p3End.toISOString().slice(0,10)
+        );
+      }
+    }
+
+    if(total>=globalCap){
+      total=Math.min(total,globalCap);
+      return Math.max(total,Math.min(baseDiut*3,globalCap));
+    }
+
+    // Fase 4: desde 01/05/2023 — 14 dias/ano.
+    if(end>=currentCutoff){
+      const p4Start=start>currentCutoff?start:currentCutoff;
+      total += dailyCapped*14*proportionalDays(
+        p4Start.toISOString().slice(0,10),
+        term
+      );
+    }
+
+    total=Math.min(total,globalCap);
+    return Math.max(total,Math.min(baseDiut*3,total));
+  }
+
+  // Contratos sem termo celebrados entre 01/11/2011 e 30/09/2013.
+  if(start<transitionCutoff){
+    // Até 30/09/2013: 20 dias/ano.
+    const p1End=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    if(start<=p1End){
+      total += dailyCapped*20*proportionalDays(
+        adm,
+        p1End.toISOString().slice(0,10)
+      );
+    }
+
+    if(total>=globalCap){
+      return Math.min(total,globalCap);
+    }
+
+    // 01/10/2013 a 30/04/2023: 18 dias nos primeiros 3 anos se
+    // em 01/10/2013 ainda não tivesse 3 anos; depois 12 dias.
+    const p2Start=start>transitionCutoff?start:transitionCutoff;
+    const p2End=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
+
+    if(p2Start<=p2End){
+      const hadThreeYearsOn2013 = addYears(start,3) <= transitionCutoff;
+
+      if(!hadThreeYearsOn2013){
+        const anniversary=addYears(start,3);
+        const firstEnd=p2End<anniversary?p2End:anniversary;
+        if(p2Start<=firstEnd){
+          total += dailyCapped*18*proportionalDays(
+            p2Start.toISOString().slice(0,10),
+            firstEnd.toISOString().slice(0,10)
+          );
+        }
+        if(p2End>anniversary){
+          const secondStart=new Date(anniversary.getTime()+86400000);
+          total += dailyCapped*12*proportionalDays(
+            secondStart.toISOString().slice(0,10),
+            p2End.toISOString().slice(0,10)
+          );
+        }
+      }else{
+        total += dailyCapped*12*proportionalDays(
+          p2Start.toISOString().slice(0,10),
+          p2End.toISOString().slice(0,10)
+        );
+      }
+    }
+
+    if(total>=globalCap){
+      return Math.min(total,globalCap);
+    }
+
+    // Desde 01/05/2023: 14 dias/ano.
+    if(end>=currentCutoff){
+      const p3Start=start>currentCutoff?start:currentCutoff;
+      total += dailyCapped*14*proportionalDays(
+        p3Start.toISOString().slice(0,10),
+        term
+      );
+    }
+
+    return Math.min(total,globalCap);
+  }
+
+  // Contratos sem termo celebrados a partir de 01/10/2013.
+  // 12 dias/ano até 30/04/2023 e 14 dias/ano desde 01/05/2023.
+  const p1End=end<dateUTC('2023-04-30')?end:dateUTC('2023-04-30');
+  if(start<=p1End){
+    total += dailyCapped*12*proportionalDays(
+      adm,
+      p1End.toISOString().slice(0,10)
+    );
+  }
+
+  if(end>=currentCutoff){
+    const p2Start=start>currentCutoff?start:currentCutoff;
+    total += dailyCapped*14*proportionalDays(
+      p2Start.toISOString().slice(0,10),
+      term
+    );
+  }
+
+  return Math.min(total,globalCap);
 }
 
-
-if(vacAnnual<=0){
-
-alert(
-'Indique o número de dias de férias anuais.'
-);
-
-return;
-
+function addYears(date,n){
+  return new Date(Date.UTC(date.getUTCFullYear()+n,date.getUTCMonth(),date.getUTCDate()));
 }
 
+function calcTermCompensation(adm,term,baseDiut,contractType){
+  const daily=baseDiut/30;
+  const start=dateUTC(adm), end=dateUTC(term);
+  const rmmg=v('rmmg');
 
-const year =
-term.slice(0,4);
+  /* Contratos a termo/temporários celebrados antes de 01/11/2011. */
+  if(start<dateUTC('2011-11-01')){
+    const totalMonths=monthsCompleted(adm,term);
+    const daysPerMonth=totalMonths<=6?3:2;
+    const firstEnd=end<dateUTC('2012-10-31')?end:dateUTC('2012-10-31');
+    let value=0;
 
+    if(start<=firstEnd){
+      const firstDays=days(adm,firstEnd.toISOString().slice(0,10));
+      value += daily*daysPerMonth*(firstDays/30);
+    }
 
-const yearStart =
-year+'-01-01';
+    const bStart=start>dateUTC('2012-11-01')?start:dateUTC('2012-11-01');
+    const bEnd=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    const cappedBase=rmmg>0?Math.min(baseDiut,rmmg*20):baseDiut;
+    const cappedDaily=cappedBase/30;
 
+    if(bStart<=bEnd){
+      value += cappedDaily*20*(days(bStart.toISOString().slice(0,10),bEnd.toISOString().slice(0,10))/365);
+    }
 
-const hasSusp =
-document.getElementById(
-'hasSusp'
-).checked;
+    const cStart=start>dateUTC('2013-10-01')?start:dateUTC('2013-10-01');
+    if(cStart<=end){
+      const durationOn2013=days(adm,'2013-10-01');
+      const lessThanThreeYears=durationOn2013<(3*365);
+      if(lessThanThreeYears){
+        const thirdAnniversary=addYears(start,3);
+        const firstEnd=end<thirdAnniversary?end:thirdAnniversary;
+        if(cStart<=firstEnd){
+          value += cappedDaily*18*(days(cStart.toISOString().slice(0,10),firstEnd.toISOString().slice(0,10))/365);
+        }
+        if(end>thirdAnniversary){
+          const secondStart=new Date(thirdAnniversary.getTime()+86400000);
+          value += cappedDaily*12*(days(secondStart.toISOString().slice(0,10),term)/365);
+        }
+      }else{
+        value += cappedDaily*12*(days(cStart.toISOString().slice(0,10),term)/365);
+      }
+    }
 
+    return value;
+  }
 
-const suspStart =
-hasSusp
-? d('suspStart')
-: '';
+  /* Contratos a termo celebrados depois de 01/11/2011 e até 30/09/2013. */
+  if(start>=dateUTC('2011-11-01') && start<=dateUTC('2013-09-30')){
+    const cappedBase=rmmg>0?Math.min(baseDiut,rmmg*20):baseDiut;
+    const cappedDaily=cappedBase/30;
+    let value=0;
 
+    const p1End=end<dateUTC('2013-09-30')?end:dateUTC('2013-09-30');
+    if(start<=p1End){
+      value += cappedDaily*20*(days(adm,p1End.toISOString().slice(0,10))/365);
+    }
 
-let suspEnd =
-hasSusp
-? d('suspEnd')
-: '';
+    const p2Start=start>dateUTC('2013-10-01')?start:dateUTC('2013-10-01');
+    if(p2Start<=end){
+      const durationOn2013=days(adm,'2013-10-01');
+      const lessThanThreeYears=durationOn2013<(3*365);
+      if(lessThanThreeYears){
+        const thirdAnniversary=addYears(start,3);
+        const firstEnd=end<thirdAnniversary?end:thirdAnniversary;
+        if(p2Start<=firstEnd){
+          value += cappedDaily*18*(days(p2Start.toISOString().slice(0,10),firstEnd.toISOString().slice(0,10))/365);
+        }
+        if(end>thirdAnniversary){
+          const secondStart=new Date(thirdAnniversary.getTime()+86400000);
+          value += cappedDaily*12*(days(secondStart.toISOString().slice(0,10),term)/365);
+        }
+      }else{
+        value += cappedDaily*12*(days(p2Start.toISOString().slice(0,10),term)/365);
+      }
+    }
 
+    return value;
+  }
 
-if(
-hasSusp &&
-!suspStart
-){
-
-alert(
-'Indique o início da suspensão.'
-);
-
-return;
-
+  // Regime atual para contratos a termo posteriores ao período transitório.
+  return daily*24*(days(adm,term)/365);
 }
 
-
-if(
-hasSusp &&
-!suspEnd
-){
-
-suspEnd=term;
-
+function toggleTerminationFields(){
+  const reason=document.getElementById('reason').value;
+  const box=document.getElementById('compFields');
+  const agreement=document.getElementById('agreementBox');
+  const resolution=document.getElementById('resolutionDaysBox');
+  const hint=document.getElementById('compHint');
+  const needs=reason==='acordo'||reason==='resolucao_justa_causa';
+  box.classList.toggle('hidden',!needs);
+  agreement.classList.toggle('hidden',reason!=='acordo');
+  resolution.classList.toggle('hidden',reason!=='resolucao_justa_causa');
+  if(reason==='acordo') hint.textContent='Introduza apenas a compensação acordada. Os restantes créditos são calculados separadamente.';
+  else if(reason==='resolucao_justa_causa') hint.textContent='O art. 396.º prevê entre 15 e 45 dias por ano e um mínimo de 3 meses de retribuição base + diuturnidades.';
+  else hint.textContent='';
 }
 
-
-/* =====================================================
-   SERVIÇO EFETIVO
-===================================================== */
-
-let serviceStart =
-yearStart;
-
-
-if(
-dateUTC(adm) >
-dateUTC(yearStart)
-){
-
-serviceStart=adm;
-
+function monthsCompleted(a,b){
+ const A=dateUTC(a),B=dateUTC(b);
+ let m=(B.getUTCFullYear()-A.getUTCFullYear())*12+(B.getUTCMonth()-A.getUTCMonth());
+ if(B.getUTCDate()<A.getUTCDate())m--;
+ return Math.max(0,m);
 }
-
-
-let serviceDays =
-days(
-serviceStart,
-term
-);
-
-
-if(
-hasSusp &&
-suspStart
-){
-
-const suspended =
-overlapDays(
-yearStart,
-term,
-suspStart,
-suspEnd
-);
-
-serviceDays =
-Math.max(
-0,
-serviceDays-suspended
-);
-
-}
-
-
-const yearLen =
-Number(year)%4===0
-? 366
-: 365;
-
-
-/* =====================================================
-   FÉRIAS VENCIDAS
-===================================================== */
-
-let vestedDays;
-
-
-if(
-adm.slice(0,4) !== year
-){
-
-vestedDays =
-vacAnnual;
-
-}else{
-
-vestedDays =
-Math.min(
-vacAnnual,
-vacAnnual *
-serviceDays /
-yearLen
-);
-
-}
-
-
-const takenDays =
-Math.max(
-0,
-v('vacTakenDays')
-);
-
-
-const unusedDays =
-Math.max(
-0,
-vestedDays-takenDays
-);
-
-
-/* =====================================================
-   FÉRIAS PROPORCIONAIS
-===================================================== */
-
-let propDays =
-vacAnnual *
-serviceDays /
-yearLen;
-
-
-if(
-adm.slice(0,4)===year
-){
-
-propDays=0;
-
-}
-
-
-const propTakenDays =
-Math.max(
-0,
-v('propTakenDays')
-);
-
-
-const propBalanceDays =
-Math.max(
-0,
-propDays-propTakenDays
-);
-
-
-/* =====================================================
-   VALOR FÉRIAS VENCIDAS
-===================================================== */
-
-const perVacationDay =
-monthly/22;
-
-
-const vestedVacationGross =
-perVacationDay *
-unusedDays;
-
-
-const vacationPaid =
-Math.max(
-0,
-v('vacPaid')
-);
-
-
-const vacationBalance =
-Math.max(
-0,
-vestedVacationGross-vacationPaid
-);
-
-
-/* =====================================================
-   PROPORCIONAL FÉRIAS
-===================================================== */
-
-const proportionalVacationGross =
-monthly /
-yearLen *
-serviceDays;
-
-
-/*
-O valor já pago de férias é abatido
-primeiro ao direito vencido.
-*/
-
-const paidAgainstVested =
-Math.min(
-vacationPaid,
-vestedVacationGross
-);
-
-
-const remainingVacationPaid =
-Math.max(
-0,
-vacationPaid-paidAgainstVested
-);
-
-
-const proportionalVacationBalance =
-Math.max(
-0,
-proportionalVacationGross -
-remainingVacationPaid
-);
-
-
-/* =====================================================
-   SUBSÍDIO DE FÉRIAS
-===================================================== */
-
-const vestedVacationSubPaid =
-Math.max(
-0,
-v('vacSubPaid')
-);
-
-
-const vestedVacationSubBalance =
-Math.max(
-0,
-vestedVacationGross -
-vestedVacationSubPaid
-);
-
-
-const proportionalVacationSubGross =
-proportionalVacationGross;
-
-
-const proportionalVacationSubPaid =
-Math.max(
-0,
-v('propSubPaid')
-);
-
-
-const proportionalVacationSubBalance =
-Math.max(
-0,
-proportionalVacationSubGross -
-proportionalVacationSubPaid
-);
-
-
-/* =====================================================
-   SALÁRIO DO MÊS
-===================================================== */
-
-const month =
-term.slice(5,7);
-
-
-const monthStart =
-year+'-'+month+'-01';
-
-
-const monthLen =
-new Date(
-Number(year),
-Number(month),
-0
-).getDate();
-
-
-let paidCalendarDays =
-Number(term.slice(8));
-
-
-if(
-hasSusp &&
-suspStart
-){
-
-paidCalendarDays =
-Math.max(
-0,
-paidCalendarDays -
-overlapDays(
-monthStart,
-term,
-suspStart,
-suspEnd
-)
-);
-
-}
-
-
-const salaryDue =
-monthly *
-paidCalendarDays /
-monthLen;
-
-
-/* =====================================================
-   SUBSÍDIO DE NATAL
-===================================================== */
-
-const christmas =
-monthly *
-serviceDays /
-yearLen;
-
-
-/* =====================================================
-   COMPENSAÇÃO
-===================================================== */
-
-const compensation =
-calculateCompensation(
-adm,
-term,
-baseDiut,
-contractType,
-reason
-);
-
-
-/* =====================================================
-   TOTAL
-===================================================== */
-
-const gross =
-salaryDue +
-vacationBalance +
-vestedVacationSubBalance +
-proportionalVacationBalance +
-proportionalVacationSubBalance +
-christmas;
-
-
-const grand =
-gross +
-compensation;
-
-
-/* =====================================================
-   RESULTADOS — DIAS
-===================================================== */
-
-document.getElementById(
-'earnedDays'
-).textContent =
-num(vestedDays)+' dias';
-
-
-document.getElementById(
-'takenDays'
-).textContent =
-num(takenDays)+' dias';
-
-
-document.getElementById(
-'unusedDays'
-).textContent =
-num(unusedDays)+' dias';
-
-
-document.getElementById(
-'propDays'
-).textContent =
-num(propDays)+' dias';
-
-
-document.getElementById(
-'propTaken'
-).textContent =
-num(propTakenDays)+' dias';
-
-
-document.getElementById(
-'propBalanceDays'
-).textContent =
-num(propBalanceDays)+' dias';
-
-
-/* =====================================================
-   RESULTADOS — VALORES
-===================================================== */
-
-set(
-'salaryDue',
-salaryDue
-);
-
-set(
-'vacBalance',
-vacationBalance
-);
-
-set(
-'vacSubBalance',
-vestedVacationSubBalance
-);
-
-set(
-'propVacValue',
-proportionalVacationBalance
-);
-
-set(
-'propSubValue',
-proportionalVacationSubBalance
-);
-
-set(
-'christmas',
-christmas
-);
-
-set(
-'gross',
-gross
-);
-
-set(
-'compensation',
-compensation
-);
-
-set(
-'grand',
-grand
-);
-
-
-/* =====================================================
-   TABELA
-===================================================== */
-
-set('t1',salaryDue);
-
-set('t2',vacationBalance);
-
-set(
-'t3',
-vestedVacationSubBalance
-);
-
-set(
-'t4',
-proportionalVacationBalance
-);
-
-set(
-'t5',
-proportionalVacationSubBalance
-);
-
-set(
-'t6',
-christmas
-);
-
-set(
-'t7',
-compensation
-);
-
-
-document.getElementById(
-'compObservation'
-).textContent =
-compensationDescription(
-reason,
-contractType
-);
-
-
-/* =====================================================
-   MEMÓRIA DE CÁLCULO
-===================================================== */
-
-let suspendedText='';
-
-
-if(
-hasSusp &&
-suspStart
-){
-
-const suspendedDays =
-overlapDays(
-yearStart,
-term,
-suspStart,
-suspEnd
-);
-
-suspendedText =
-`
-<br>
-Dias de suspensão considerados:
-<b>${num(suspendedDays)} dias</b>.
-`;
-
-}
-
-
-document.getElementById(
-'logic'
-).innerHTML = `
-
-<b>Memória de cálculo</b>
-
-<br><br>
-
-Retribuição mensal considerada:
-<b>${eur(monthly)}</b>.
-
-<br>
-
-Retribuição base + diuturnidades
-para compensação:
-<b>${eur(baseDiut)}</b>.
-
-<br>
-
-Dias de serviço efetivo no ano:
-<b>${num(serviceDays)} dias</b>.
-${suspendedText}
-
-<br><br>
-
-<b>Férias vencidas</b>:
-
-${num(vestedDays)}
-dias de direito
-
-−
-
-${num(takenDays)}
-dias gozados
-
-=
-
-<b>
-${num(unusedDays)} dias
-</b>
-não gozados.
-
-<br>
-
-Valor:
-
-${eur(monthly)}
-÷ 22
-× ${num(unusedDays)}
-=
-
-<b>
-${eur(vestedVacationGross)}
-</b>.
-
-<br><br>
-
-<b>Férias proporcionais</b>:
-
-${eur(monthly)}
-÷ ${yearLen}
-× ${num(serviceDays)}
-
-=
-
-<b>
-${eur(proportionalVacationGross)}
-</b>.
-
-<br><br>
-
-<b>Subsídio de férias proporcional</b>:
-
-${eur(monthly)}
-÷ ${yearLen}
-× ${num(serviceDays)}
-
-=
-
-<b>
-${eur(proportionalVacationSubGross)}
-</b>.
-
-<br><br>
-
-<b>Subsídio de Natal</b>:
-
-${eur(monthly)}
-÷ ${yearLen}
-× ${num(serviceDays)}
-
-=
-
-<b>
-${eur(christmas)}
-</b>.
-
-<br><br>
-
-<b>Compensação:</b>
-
-${eur(compensation)}
-
-<br>
-
-${compensationDescription(
-reason,
-contractType
-)}
-
-`;
-
-}
-
-
-/* =====================================================
-   RESET
-===================================================== */
-
 function resetForm(){
-
-document
-.querySelectorAll('input')
-.forEach(i=>{
-
-if(i.type==='checkbox'){
-
-i.checked=false;
-
-}else{
-
-i.value='';
-
+  document.querySelectorAll('input').forEach(i=>{ if(i.type==='checkbox') i.checked=false; else i.value=''; });
+  document.getElementById('contractType').value='';
+  document.getElementById('reason').value='';
+  document.getElementById('resolutionDays').value='';
+  document.getElementById('compFields').classList.add('hidden');
+  document.getElementById('suspBox').classList.add('hidden');
+  ['earnedDays','takenDays','unusedDays','propDays','propTaken','propBalanceDays'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('logic').textContent='Preencha os dados do contrato e clique em "Calcular acerto".';
+  ['salaryDue','vacBalance','vacSubBalance','propVacValue','propSubValue','christmas','gross','compensation','grand','t1','t2','t3','t4','t5','t6','t7'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('compObservation').textContent='Selecione o motivo da cessação';
 }
-
-});
-
-
-document.getElementById(
-'contractType'
-).value='';
-
-
-document.getElementById(
-'reason'
-).value='';
-
-
-document.getElementById(
-'resolutionDays'
-).value='';
-
-
-document.getElementById(
-'compFields'
-).classList.add(
-'hidden'
-);
-
-
-document.getElementById(
-'suspBox'
-).classList.add(
-'hidden'
-);
-
-
-[
-'earnedDays',
-'takenDays',
-'unusedDays',
-'propDays',
-'propTaken',
-'propBalanceDays'
-].forEach(id=>{
-
-document.getElementById(id)
-.textContent='—';
-
-});
-
-
-document.getElementById(
-'logic'
-).textContent =
-'Preencha os dados do contrato e clique em "Calcular acerto".';
-
-
-[
-'salaryDue',
-'vacBalance',
-'vacSubBalance',
-'propVacValue',
-'propSubValue',
-'christmas',
-'gross',
-'compensation',
-'grand',
-'t1',
-'t2',
-'t3',
-'t4',
-'t5',
-'t6',
-'t7'
-].forEach(id=>{
-
-document.getElementById(id)
-.textContent='—';
-
-});
-
-
-document.getElementById(
-'compObservation'
-).textContent =
-'Selecione o motivo da cessação';
-
-}
-
 
 toggleSusp();
 toggleTerminationFields();
 
 </script>
-
-</body>
-</html>
+</body></html>
