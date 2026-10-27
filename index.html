@@ -515,11 +515,11 @@ function calculate(){
 
  // Exclude suspension days from the effective-service window.
  if(has && ss){
-   const overlap=overlapDays(yearStart,term,ss,se);
+   const overlap=overlapDays(serviceStart,serviceEnd,ss,se);
    serviceDays=Math.max(0,serviceDays-overlap);
  }
 
- const yearLen=(Number(y)%4===0?366:365);
+ const yearLen=daysInYear(y);
 
  // Apuramento anual das férias, incluindo o limite do art. 245.º, n.º 3,
  // quando a cessação ocorre no ano civil seguinte ao da admissão.
@@ -591,7 +591,7 @@ function calculate(){
    const sy=ss.slice(0,4);
    const specialStart=(adm.slice(0,4)===sy)?adm:sy+'-01-01';
    const specialServiceDays=Math.max(0,days(specialStart,ss)-1);
-   const specialYearLen=(Number(sy)%4===0?366:365);
+   const specialYearLen=daysInYear(sy);
    const specialDays=vacAnnual*specialServiceDays/specialYearLen;
    specialText=` <b>Atenção à regra especial da baixa prolongada:</b> suspensão iniciada em ${sy}; o art. 245.º, n.º 4, exige apuramento próprio das férias/subsídio correspondentes ao tempo de serviço no ano em que começou a suspensão (${num(specialDays)} dias). Este valor deve ser tratado separadamente para evitar dupla contagem.`;
  }
@@ -671,7 +671,7 @@ const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
  const specialNote=specialText||' Não existe, neste cenário, uma suspensão prolongada a exigir a regra especial do art. 245.º, n.º 4.';
  document.getElementById('logic').innerHTML=
  `<b>Memória de cálculo:</b><br>
- Período de serviço efetivo no ano da cessação: <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(yearStart,term,ss,se))+' dias de suspensão)':''}.<br>
+ Período de serviço efetivo no ano da cessação (contagem inclusiva, incluindo o primeiro dia): <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(serviceStart,term,ss,se))+' dias de suspensão)':''}.<br>
  <b>Direito a férias discriminado por ano:</b><br>${vacationYearBreakdown}<br>
  Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> por gozar${vestedExcessDays>0?' (foram gozados em excesso <b>'+num(vestedExcessDays)+' dias</b>)':''}.<br>
  Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; ${propTakenDays<=propDays?'menos '+num(propTakenDays)+' dias já gozados = <b>'+num(propBalanceDays)+' dias por gozar</b>':'foram gozados '+num(propTakenDays)+' dias, ou seja, <b>'+num(propExcessDays)+' dias gozados em excesso</b>'}.<br>
@@ -1187,6 +1187,10 @@ function formatContractDuration(admission, termination){
   const start=dateUTC(admission);
   const end=dateUTC(termination);
   if(end<start) return 'Data de cessação anterior à data de admissão';
+
+  // Contagem inclusiva como na ACT: o dia de admissão também conta.
+  // Somamos um dia ao fim para apresentar a duração civil inclusiva.
+  end.setUTCDate(end.getUTCDate()+1);
 
   let years=end.getUTCFullYear()-start.getUTCFullYear();
   let months=end.getUTCMonth()-start.getUTCMonth();
