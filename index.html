@@ -668,6 +668,9 @@ const propVacBalance=propBalanceDays>0 ? perDay*propBalanceDays : 0;
  }
 
  const specialNote=specialText||' Não existe, neste cenário, uma suspensão prolongada a exigir a regra especial do art. 245.º, n.º 4.';
+ const proportionalRefundNote = proportionalSubRefund > 0
+   ? '; diferença potencial a devolver: <b>' + eur(proportionalSubRefund) + '</b>'
+   : '';
  document.getElementById('logic').innerHTML=
  `<b>Memória de cálculo:</b><br>
  Período de serviço efetivo no ano da cessação (contagem inclusiva, incluindo o primeiro dia): <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(serviceStart,term,ss,se))+' dias de suspensão)':''}.<br>
@@ -678,7 +681,7 @@ const propVacBalance=propBalanceDays>0 ? perDay*propBalanceDays : 0;
 Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
  Retribuição de férias proporcionais ainda por pagar: <b>${num(propBalanceDays)} dias por gozar × ${eur(perDay)} = ${eur(propVacBalance)}</b>.<br>
  Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
- Subsídio de férias proporcional devido: <b>${eur(propSubGross)}</b>; já pago <b>${eur(propSubPaid)}</b>; saldo a pagar <b>${eur(proportionalSubBalance)}</b>${proportionalSubRefund>0?'; diferença potencial a devolver: <b>'+eur(proportionalSubRefund)+'</b>':''}.<br>
+ Subsídio de férias proporcional devido: <b>${eur(propSubGross)}</b>; já pago <b>${eur(propSubPaid)}</b>; saldo a pagar <b>${eur(proportionalSubBalance)}</b>${proportionalRefundNote}.<br>
  Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
  <br><b>Formação profissional:</b> ${num(training.totalHours)} h × ${eur(training.hourly)}/h = <b>${eur(training.value)}</b>.<br>
  <b>Compensação / indemnização:</b><br>
