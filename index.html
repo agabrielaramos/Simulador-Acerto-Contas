@@ -227,7 +227,7 @@ Simulador de compensação por cessação de contrato de trabalho
 </div>
 <div class="row">
 <div><label>Outras componentes retributivas para férias (€)</label><input id="extras" type="number" min="0" step=".01"></div>
-<div><label>Dias de férias anuais</label><input id="vacDays" type="number" min="1" step="1"></div>
+<div><label>Dias de férias anuais</label><input id="vacDays" type="number" min="1" step="1" value="22"></div>
 </div>
 <div class="row">
 <div><label>RMMG aplicável à cessação (€) — para limites da compensação</label><input id="rmmg" type="number" min="0" step=".01"></div>
@@ -355,10 +355,10 @@ Simulador de compensação por cessação de contrato de trabalho
 <div class="results">
 <div class="metric"><span>Férias vencidas (direito)</span><strong id="earnedDays">—</strong></div>
 <div class="metric"><span>Férias vencidas já gozadas</span><strong id="takenDays">—</strong></div>
-<div class="metric total"><span>Férias vencidas não gozadas</span><strong id="unusedDays">—</strong></div>
+<div class="metric total"><span id="unusedDaysLabel">Férias vencidas não gozadas</span><strong id="unusedDays">—</strong></div>
 <div class="metric"><span>Férias proporcionais do ano</span><strong id="propDays">—</strong></div>
 <div class="metric"><span>Proporcionais já gozados</span><strong id="propTaken">—</strong></div>
-<div class="metric total"><span>Proporcionais ainda devidos</span><strong id="propBalanceDays">—</strong></div>
+<div class="metric total"><span id="propBalanceLabel">Proporcionais ainda devidos</span><strong id="propBalanceDays">—</strong></div>
 </div>
 <div class="detail" id="logic">Preencha os dados do contrato e clique em "Calcular acerto".</div>
 </section>
@@ -469,7 +469,7 @@ function calculate(){
  if(dateUTC(term)<dateUTC(adm)){alert('A cessação não pode ser anterior à admissão.');return}
 
  const monthly=v('salary')+v('diut')+v('extras');
- const vacAnnual=v('vacDays');
+ const vacAnnual=v('vacDays')||22;
  const y=term.slice(0,4), yearStart=y+'-01-01';
 
  const has=document.getElementById('hasSusp').checked;
@@ -521,27 +521,68 @@ function calculate(){
 
  const yearLen=(Number(y)%4===0?366:365);
 
- // Vencidas: in a normal multi-year contract, full annual entitlement is already vested.
- // If the contract started in the same year, there is no prior-year 22-day bucket.
- let earnedDays=0;
- if(adm.slice(0,4)!==y){
-   earnedDays=vacAnnual;
- } else {
-   // First-year / contract <= 12 months: proportional entitlement.
-   earnedDays=Math.min(vacAnnual, vacAnnual*serviceDays/yearLen);
+ // Apuramento anual das férias, incluindo o limite do art. 245.º, n.º 3,
+ // quando a cessação ocorre no ano civil seguinte ao da admissão.
+ const vacationYearLines=[];
+ const admissionYear=Number(adm.slice(0,4));
+ const terminationYear=Number(y);
+ // Contar apenas meses civis completos de contrato no ano de admissão.
+ // Ex.: admissão em 10/03/2025 e contrato até 31/12/2025 = abril a dezembro (9 meses).
+ const daysInMonth=(year, monthIndex)=>new Date(Date.UTC(year, monthIndex+1, 0)).getUTCDate();
+ let admissionMonthCount=0;
+ for(let monthIndex=0; monthIndex<12; monthIndex++){
+   const monthStart=`${admissionYear}-${String(monthIndex+1).padStart(2,'0')}-01`;
+   const monthEnd=`${admissionYear}-${String(monthIndex+1).padStart(2,'0')}-${String(daysInMonth(admissionYear,monthIndex)).padStart(2,'0')}`;
+   if(dateUTC(monthStart)>=dateUTC(adm) && dateUTC(monthEnd)<=dateUTC(term)) admissionMonthCount++;
  }
+ const admissionYearEntitlement=Math.min(20, 2*admissionMonthCount);
+ let totalContractVacationCap=vacAnnual*days(adm,term)/365;
+ if(has && ss){
+   totalContractVacationCap=Math.max(0,totalContractVacationCap-overlapDays(adm,term,ss,se)*vacAnnual/365);
+ }
+ let terminationYearEntitlement=0;
+ if(terminationYear===admissionYear){
+   terminationYearEntitlement=admissionYearEntitlement;
+ } else if(terminationYear===admissionYear+1){
+   terminationYearEntitlement=Math.max(0,totalContractVacationCap-admissionYearEntitlement);
+ } else {
+   terminationYearEntitlement=vacAnnual*serviceDays/yearLen;
+ }
+ for(let vacationYear=admissionYear; vacationYear<=terminationYear; vacationYear++){
+   let entitlement, description;
+   if(vacationYear===admissionYear){
+     entitlement=admissionYearEntitlement;
+     description='proporcional no ano de admissão (2 dias por mês, máximo 20)';
+   } else if(vacationYear===terminationYear && vacationYear===admissionYear+1){
+     entitlement=terminationYearEntitlement;
+     description='proporcional, limitado pelo total do contrato (art. 245.º, n.º 3)';
+   } else if(vacationYear===terminationYear){
+     entitlement=terminationYearEntitlement;
+     description='proporcional ao serviço no ano da cessação';
+   } else {
+     entitlement=vacAnnual;
+     description='direito anual';
+   }
+   vacationYearLines.push(`<b>${vacationYear}:</b> ${num(entitlement)} dias (${description})`);
+ }
+ const vacationYearBreakdown=vacationYearLines.join('<br>');
 
- // Férias vencidas: nunca podem ultrapassar o direito anual introduzido.
-// Ex.: 22 dias de direito - 1 dia gozado = 21 dias a pagar.
-const vestedEntitlement=Math.min(vacAnnual, Math.max(0,earnedDays));
-const unusedDays=Math.min(vestedEntitlement, Math.max(0,vestedEntitlement-takenDays));
+ let earnedDays;
+ if(terminationYear===admissionYear){
+   earnedDays=admissionYearEntitlement;
+ } else if(terminationYear===admissionYear+1){
+   earnedDays=admissionYearEntitlement;
+ } else {
+   earnedDays=vacAnnual;
+ }
+ const vestedEntitlement=Math.max(0,earnedDays);
+ const unusedDays=Math.min(vestedEntitlement, Math.max(0,vestedEntitlement-takenDays));
+ const vestedExcessDays=Math.max(0,takenDays-vestedEntitlement);
 
-// Proportional entitlement for the termination year.
- // For a multi-year contract, this is based on effective service in the year.
- let propDays=vacAnnual*serviceDays/yearLen;
-
- // If this is the first calendar year of the contract, don't duplicate the same entitlement.
- if(adm.slice(0,4)===y) propDays=0;
+ // No ano civil seguinte ao da admissão, o total de férias do contrato
+ // não pode exceder o proporcional à duração total do contrato.
+ let propDays=terminationYear===admissionYear ? 0 :
+   terminationYear===admissionYear+1 ? terminationYearEntitlement : vacAnnual*serviceDays/yearLen;
 
  // If there was a prolonged suspension and termination follows it, art.245(4)
  // creates a special rule tied to service in the year suspension began.
@@ -557,6 +598,7 @@ const unusedDays=Math.min(vestedEntitlement, Math.max(0,vestedEntitlement-takenD
 
  // Days already used from proportional bucket.
  const propBalanceDays=Math.max(0,propDays-propTakenDays);
+ const propExcessDays=Math.max(0,propTakenDays-propDays);
 
  // Monetary value per vacation day.
  // Fórmula das férias vencidas não gozadas:
@@ -607,22 +649,37 @@ const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
 
  document.getElementById('earnedDays').textContent=num(earnedDays)+' dias';
  document.getElementById('takenDays').textContent=num(takenDays)+' dias';
- document.getElementById('unusedDays').textContent=num(unusedDays)+' dias';
+ const unusedDaysLabel=document.getElementById('unusedDaysLabel');
+ if(vestedExcessDays>0){
+   unusedDaysLabel.textContent='Férias vencidas gozadas em excesso';
+   document.getElementById('unusedDays').textContent=num(vestedExcessDays)+' dias';
+ } else {
+   unusedDaysLabel.textContent='Férias vencidas não gozadas';
+   document.getElementById('unusedDays').textContent=num(unusedDays)+' dias';
+ }
  document.getElementById('propDays').textContent=num(propDays)+' dias';
  document.getElementById('propTaken').textContent=num(propTakenDays)+' dias';
- document.getElementById('propBalanceDays').textContent=num(propBalanceDays)+' dias';
+ const propBalanceLabel=document.getElementById('propBalanceLabel');
+ if(propExcessDays>0){
+   propBalanceLabel.textContent='Proporcionais gozados em excesso';
+   document.getElementById('propBalanceDays').textContent=num(propExcessDays)+' dias';
+ } else {
+   propBalanceLabel.textContent='Proporcionais ainda devidos';
+   document.getElementById('propBalanceDays').textContent=num(propBalanceDays)+' dias';
+ }
 
  const specialNote=specialText||' Não existe, neste cenário, uma suspensão prolongada a exigir a regra especial do art. 245.º, n.º 4.';
  document.getElementById('logic').innerHTML=
  `<b>Memória de cálculo:</b><br>
  Período de serviço efetivo no ano da cessação: <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(yearStart,term,ss,se))+' dias de suspensão)':''}.<br>
- Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> a pagar.<br>
- Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; menos ${num(propTakenDays)} dias já gozados = <b>${num(propBalanceDays)} dias</b>.<br>
+ <b>Direito a férias discriminado por ano:</b><br>${vacationYearBreakdown}<br>
+ Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> por gozar${vestedExcessDays>0?' (foram gozados em excesso <b>'+num(vestedExcessDays)+' dias</b>)':''}.<br>
+ Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; ${propTakenDays<=propDays?'menos '+num(propTakenDays)+' dias já gozados = <b>'+num(propBalanceDays)+' dias por gozar</b>':'foram gozados '+num(propTakenDays)+' dias, ou seja, <b>'+num(propExcessDays)+' dias gozados em excesso</b>'}.<br>
  Valor diário das férias vencidas: <b>${eur(monthly)} / ${num(vacAnnual)} = ${eur(perDay)}</b>.<br>
 Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
  Retribuição de férias proporcional (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias = ${eur(propGross)}</b>.<br>
  Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
- Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(proportionalSubBalance)}</b>.<br>
+ Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(propSubGross-propSubPaid)}</b>${propSubPaid>propSubGross?' (subsídio pago em excesso: <b>'+eur(propSubPaid-propSubGross)+'</b>)':propSubPaid<propSubGross?' (ainda devido: <b>'+eur(propSubGross-propSubPaid)+'</b>)':''}.<br>
  Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
  <br><b>Formação profissional:</b> ${num(training.totalHours)} h × ${eur(training.hourly)}/h = <b>${eur(training.value)}</b>.<br>
  <b>Compensação / indemnização:</b><br>
@@ -1181,6 +1238,7 @@ function resetForm(){
   document.getElementById('compFields').classList.add('hidden');
   document.getElementById('suspBox').classList.add('hidden');
   ['earnedDays','takenDays','unusedDays','propDays','propTaken','propBalanceDays','trainingDueHours','trainingProvidedHours','trainingBalanceHours','trainingHourlyRate','trainingValue','trainingPeriod'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('unusedDaysLabel').textContent='Férias vencidas não gozadas';
   document.getElementById('logic').textContent='Preencha os dados do contrato e clique em "Calcular acerto".';
   document.getElementById('contractDuration').textContent='Duração: —';
   ['salaryDue','vacBalance','vacSubBalance','propVacValue','propSubValue','christmas','gross','compensation','grand','t1','t2','t3','t4','t5','t6','t7','t8','trainingValueSummary'].forEach(id=>document.getElementById(id).textContent='—');
