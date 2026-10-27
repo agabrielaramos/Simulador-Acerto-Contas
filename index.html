@@ -385,7 +385,7 @@ Simulador de compensação por cessação de contrato de trabalho
 <tr><td>Retribuição vencida</td><td id="t1">—</td><td>Tempo efetivamente retribuído</td></tr>
 <tr><td>Férias vencidas não gozadas</td><td id="t2">—</td><td>Após abatimento das férias gozadas/pagas</td></tr>
 <tr><td>Subsídio de férias vencido</td><td id="t3">—</td><td>Após abatimento do já pago</td></tr>
-<tr><td>Férias proporcionais</td><td id="t4">—</td><td>Saldo ainda devido</td></tr>
+<tr><td>Férias proporcionais</td><td id="t4">—</td><td>Após dedução dos dias já gozados</td></tr>
 <tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td id="t5obs">Saldo após dedução do já pago</td></tr>
 <tr><td>Subsídio de Natal</td><td id="t6">—</td><td>Proporcional ao tempo de serviço</td></tr>
 <tr><td>Compensação / indemnização</td><td id="t7">—</td><td id="compObservation">Selecione o motivo da cessação</td></tr>
@@ -717,7 +717,7 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
  set('t1',salaryDue);
  set('t2',vacBalance);
 set('t3',vestedSubBalance);
-set('t4',propGross);
+set('t4',propVacBalance);
 set('t5', proportionalSubBalance > 0 ? proportionalSubBalance : (proportionalSubRefund > 0 ? '0,00 € — potencial a devolver: ' + eur(proportionalSubRefund) : 0));
  document.getElementById('t5obs').textContent = proportionalSubRefund > 0 ? 'Saldo a pagar: 0,00 €; diferença potencial a devolver (confirmar enquadramento)' : 'Saldo ainda devido, após dedução do já pago';
  set('t6',christmas);
