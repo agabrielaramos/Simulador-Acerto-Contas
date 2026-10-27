@@ -385,8 +385,9 @@ Simulador de compensação por cessação de contrato de trabalho
 <tr><td>Retribuição vencida</td><td id="t1">—</td><td>Tempo efetivamente retribuído</td></tr>
 <tr><td>Férias vencidas não gozadas</td><td id="t2">—</td><td>Após abatimento das férias gozadas/pagas</td></tr>
 <tr><td>Subsídio de férias vencido</td><td id="t3">—</td><td>Após abatimento do já pago</td></tr>
-<tr><td>Férias proporcionais</td><td id="t4">—</td><td>Após dedução dos dias já gozados</td></tr>
-<tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td id="t5obs">Saldo após dedução do já pago</td></tr>
+<tr><td>Férias proporcionais</td><td id="t4">—</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td>Saldo ainda devido, após dedução do já pago</td></tr>
+<tr><td>Subsídio de férias proporcional pago em excesso</td><td id="t9">—</td><td>Diferença potencial a devolver; confirmar enquadramento antes de exigir restituição</td></tr>
 <tr><td>Subsídio de Natal</td><td id="t6">—</td><td>Proporcional ao tempo de serviço</td></tr>
 <tr><td>Compensação / indemnização</td><td id="t7">—</td><td id="compObservation">Selecione o motivo da cessação</td></tr>
 <tr><td>Créditos de formação não ministrada</td><td id="t8">—</td><td>Art. 134.º — horas de formação devidas não proporcionadas / crédito de horas</td></tr>
@@ -535,6 +536,29 @@ function calculate(){
    if(dateUTC(monthStart)>=dateUTC(adm) && dateUTC(monthEnd)<=dateUTC(term)) admissionMonthCount++;
  }
  const admissionYearEntitlement=Math.min(20, 2*admissionMonthCount);
+
+ // Regra especial definida para este simulador: se a suspensão prolongada
+ // termina no ano da cessação, atribuir 2 dias por cada mês civil completo
+ // posterior ao fim da suspensão, até ao limite de 20 dias.
+ const suspensionEndsInTerminationYear = !!(has && ss && se &&
+   Number(ss.slice(0,4)) < terminationYear &&
+   Number(se.slice(0,4)) === terminationYear &&
+   dateUTC(se) <= dateUTC(term));
+ let returnYearMonthCount=0;
+ if(suspensionEndsInTerminationYear){
+   for(let monthIndex=0; monthIndex<12; monthIndex++){
+     const monthStart=`${terminationYear}-${String(monthIndex+1).padStart(2,'0')}-01`;
+     const monthEnd=`${terminationYear}-${String(monthIndex+1).padStart(2,'0')}-${String(daysInMonth(terminationYear,monthIndex)).padStart(2,'0')}`;
+     if(dateUTC(monthStart)>dateUTC(se) && dateUTC(monthEnd)<=dateUTC(term)) returnYearMonthCount++;
+   }
+ }
+ const returnYearEntitlement=Math.min(20,2*returnYearMonthCount);
+
+ // Verifica se a suspensão cobriu todo o ano civil anterior à cessação.
+ const suspensionCoversPriorCalendarYear = !!(has && ss && se &&
+   dateUTC(ss) <= dateUTC(`${terminationYear-1}-01-01`) &&
+   dateUTC(se) >= dateUTC(`${terminationYear-1}-12-31`));
+
  let totalContractVacationCap=vacAnnual*days(adm,term)/365;
  if(has && ss){
    totalContractVacationCap=Math.max(0,totalContractVacationCap-overlapDays(adm,term,ss,se)*vacAnnual/365);
@@ -549,9 +573,15 @@ function calculate(){
  }
  for(let vacationYear=admissionYear; vacationYear<=terminationYear; vacationYear++){
    let entitlement, description;
-   if(vacationYear===admissionYear){
+   if(vacationYear===terminationYear-1 && suspensionCoversPriorCalendarYear){
+     entitlement=0;
+     description='sem direito anual por suspensão prolongada durante todo o ano';
+   } else if(vacationYear===admissionYear){
      entitlement=admissionYearEntitlement;
      description='proporcional no ano de admissão (2 dias por mês, máximo 20)';
+   } else if(vacationYear===terminationYear && suspensionEndsInTerminationYear){
+     entitlement=returnYearEntitlement;
+     description='ano do regresso após suspensão prolongada: 2 dias por mês completo, máximo 20';
    } else if(vacationYear===terminationYear && vacationYear===admissionYear+1){
      entitlement=terminationYearEntitlement;
      description='proporcional, limitado pelo total do contrato (art. 245.º, n.º 3)';
@@ -567,7 +597,9 @@ function calculate(){
  const vacationYearBreakdown=vacationYearLines.join('<br>');
 
  let earnedDays;
- if(terminationYear===admissionYear){
+ if(suspensionCoversPriorCalendarYear){
+   earnedDays=0;
+ } else if(terminationYear===admissionYear){
    earnedDays=admissionYearEntitlement;
  } else if(terminationYear===admissionYear+1){
    earnedDays=admissionYearEntitlement;
@@ -581,6 +613,7 @@ function calculate(){
  // No ano civil seguinte ao da admissão, o total de férias do contrato
  // não pode exceder o proporcional à duração total do contrato.
  let propDays=terminationYear===admissionYear ? 0 :
+   suspensionEndsInTerminationYear ? returnYearEntitlement :
    terminationYear===admissionYear+1 ? terminationYearEntitlement : vacAnnual*serviceDays/yearLen;
 
  // If there was a prolonged suspension and termination follows it, art.245(4)
@@ -609,7 +642,9 @@ const vacGross=Math.min(monthly, perDay*unusedDays);
 // Proporcionais: ACT-style formula
 // (vencimento / número de dias do ano) × dias efetivamente trabalhados.
 const propGross=(monthly/yearLen)*serviceDays;
-const propSubGross=propGross;
+const propSubGross=suspensionEndsInTerminationYear
+  ? (monthly/vacAnnual)*returnYearEntitlement
+  : propGross;
 
  // Subsídio de férias vencido e proporcional são rubricas independentes.
  const vestedSubBalance=Math.max(0,vacGross-Math.min(vacGross,vacSubPaid));
@@ -675,7 +710,7 @@ const propVacBalance=propBalanceDays>0 ? perDay*propBalanceDays : 0;
  Período de serviço efetivo no ano da cessação (contagem inclusiva, incluindo o primeiro dia): <b>${serviceStart}</b> a <b>${term}</b> = <b>${num(serviceDays)} dias</b>${has&&ss?' (excluindo '+num(overlapDays(serviceStart,term,ss,se))+' dias de suspensão)':''}.<br>
  <b>Direito a férias discriminado por ano:</b><br>${vacationYearBreakdown}<br>
  Férias vencidas: direito de <b>${num(vestedEntitlement)} dias</b> − <b>${num(takenDays)} dia(s) gozados</b> = <b>${num(unusedDays)} dias</b> por gozar${vestedExcessDays>0?' (foram gozados em excesso <b>'+num(vestedExcessDays)+' dias</b>)':''}.<br>
- Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; ${propTakenDays<=propDays?'menos '+num(propTakenDays)+' dias já gozados = <b>'+num(propBalanceDays)+' dias por gozar</b>':'foram gozados '+num(propTakenDays)+' dias, ou seja, <b>'+num(propExcessDays)+' dias gozados em excesso</b>'}.<br>
+ Proporcionais do ano: <b>${suspensionEndsInTerminationYear ? '2 × '+num(returnYearMonthCount)+' meses completos após o regresso = '+num(propDays)+' dias de férias' : num(vacAnnual)+' × '+num(serviceDays)+' / '+yearLen+' = '+num(propDays)+' dias de férias'}</b>; ${propTakenDays<=propDays?'menos '+num(propTakenDays)+' dias já gozados = <b>'+num(propBalanceDays)+' dias por gozar</b>':'foram gozados '+num(propTakenDays)+' dias, ou seja, <b>'+num(propExcessDays)+' dias gozados em excesso</b>'}.<br>
  Valor diário das férias vencidas: <b>${eur(monthly)} / ${num(vacAnnual)} = ${eur(perDay)}</b>.<br>
 Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
  Retribuição de férias proporcionais ainda por pagar: <b>${num(propBalanceDays)} dias por gozar × ${eur(perDay)} = ${eur(propVacBalance)}</b>.<br>
@@ -717,12 +752,12 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
  set('t1',salaryDue);
  set('t2',vacBalance);
 set('t3',vestedSubBalance);
-set('t4',propVacBalance);
-set('t5', proportionalSubBalance > 0 ? proportionalSubBalance : (proportionalSubRefund > 0 ? '0,00 € — potencial a devolver: ' + eur(proportionalSubRefund) : 0));
- document.getElementById('t5obs').textContent = proportionalSubRefund > 0 ? 'Saldo a pagar: 0,00 €; diferença potencial a devolver (confirmar enquadramento)' : 'Saldo ainda devido, após dedução do já pago';
+set('t4',propGross);
+set('t5',Math.max(0,propSubGross-propSubPaid));
  set('t6',christmas);
  set('t7',compensation);
  set('t8',training.value);
+ set('t9', proportionalSubRefund);
 }
 
 
