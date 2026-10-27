@@ -370,6 +370,7 @@ Simulador de compensação por cessação de contrato de trabalho
 <div class="metric"><span>Subsídio de férias — vencido</span><strong id="vacSubBalance">—</strong></div>
 <div class="metric"><span>Retribuição — férias proporcionais</span><strong id="propVacValue">—</strong></div>
 <div class="metric"><span>Subsídio de férias — proporcional</span><strong id="propSubValue">—</strong></div>
+<div class="metric"><span>Subsídio de férias pago em excesso (a devolver)</span><strong id="propSubRefund">—</strong></div>
 <div class="metric"><span>Subsídio de Natal</span><strong id="christmas">—</strong></div>
 <div class="metric"><span>Créditos de formação não ministrada</span><strong id="trainingValueSummary">—</strong></div>
 </div>
@@ -386,7 +387,8 @@ Simulador de compensação por cessação de contrato de trabalho
 <tr><td>Férias vencidas não gozadas</td><td id="t2">—</td><td>Após abatimento das férias gozadas/pagas</td></tr>
 <tr><td>Subsídio de férias vencido</td><td id="t3">—</td><td>Após abatimento do já pago</td></tr>
 <tr><td>Férias proporcionais</td><td id="t4">—</td><td>Saldo ainda devido</td></tr>
-<tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td>Saldo ainda devido</td></tr>
+<tr><td>Subsídio de férias proporcional</td><td id="t5">—</td><td>Saldo ainda devido, após dedução do já pago</td></tr>
+<tr><td>Subsídio de férias proporcional pago em excesso</td><td id="t9">—</td><td>Diferença potencial a devolver; confirmar enquadramento antes de exigir restituição</td></tr>
 <tr><td>Subsídio de Natal</td><td id="t6">—</td><td>Proporcional ao tempo de serviço</td></tr>
 <tr><td>Compensação / indemnização</td><td id="t7">—</td><td id="compObservation">Selecione o motivo da cessação</td></tr>
 <tr><td>Créditos de formação não ministrada</td><td id="t8">—</td><td>Art. 134.º — horas de formação devidas não proporcionadas / crédito de horas</td></tr>
@@ -615,6 +617,7 @@ const propSubGross=propGross;
  // Subsídio de férias vencido e proporcional são rubricas independentes.
  const vestedSubBalance=Math.max(0,vacGross-Math.min(vacGross,vacSubPaid));
  const proportionalSubBalance=Math.max(0,propSubGross-propSubPaid);
+ const proportionalSubRefund=Math.max(0,propSubPaid-propSubGross);
  const totalSubGross=vacGross+propSubGross;
  const totalSubBalance=vestedSubBalance+proportionalSubBalance;
 
@@ -624,7 +627,7 @@ const propSubGross=propGross;
 const paidAgainstVested=Math.min(vacGross,vacPaid);
 const remainingPaidForProportional=Math.max(0,vacPaid-paidAgainstVested);
 const vacBalance=Math.max(0,vacGross-paidAgainstVested);
-const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
+const propVacBalance=propBalanceDays>0 ? Math.max(0,perDay*propBalanceDays-remainingPaidForProportional) : 0;
 
  // Salary in termination month: only calendar days outside suspension.
  const month=term.slice(5,7);
@@ -644,8 +647,8 @@ const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
  // que é a base indicada no art. 366.º. As restantes componentes não entram aqui.
  const compensationResult=calculateCompensation(adm,term,baseDiut,contractType,reason);
  const compensation=compensationResult.value;
- const gross=salaryDue+vacBalance+propGross+totalSubBalance+christmas+training.value;
- const grand=gross+compensation;
+ const gross=salaryDue+vacBalance+propVacBalance+totalSubBalance+christmas+training.value;
+ const grand=gross+compensation-proportionalSubRefund;
 
  document.getElementById('earnedDays').textContent=num(earnedDays)+' dias';
  document.getElementById('takenDays').textContent=num(takenDays)+' dias';
@@ -679,7 +682,7 @@ const propVacBalance=Math.max(0,propGross-remainingPaidForProportional);
 Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
  Retribuição de férias proporcional (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias = ${eur(propGross)}</b>.<br>
  Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
- Subsídio de férias proporcional: <b>${eur(propSubGross)}</b> − já pago <b>${eur(propSubPaid)}</b> = <b>${eur(propSubGross-propSubPaid)}</b>${propSubPaid>propSubGross?' (subsídio pago em excesso: <b>'+eur(propSubPaid-propSubGross)+'</b>)':propSubPaid<propSubGross?' (ainda devido: <b>'+eur(propSubGross-propSubPaid)+'</b>)':''}.<br>
+ Subsídio de férias proporcional devido: <b>${eur(propSubGross)}</b>; já pago <b>${eur(propSubPaid)}</b>; saldo a pagar <b>${eur(proportionalSubBalance)}</b>${proportionalSubRefund>0?'; diferença potencial a devolver: <b>${eur(proportionalSubRefund)} </b>':''}.<br>
  Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
  <br><b>Formação profissional:</b> ${num(training.totalHours)} h × ${eur(training.hourly)}/h = <b>${eur(training.value)}</b>.<br>
  <b>Compensação / indemnização:</b><br>
@@ -706,6 +709,7 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
  set('vacSubBalance',vestedSubBalance);
  set('propVacValue',propGross);
  set('propSubValue',proportionalSubBalance);
+ set('propSubRefund',proportionalSubRefund);
  set('christmas',christmas);
  set('gross',gross);
  set('compensation',compensation);
