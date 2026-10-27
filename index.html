@@ -340,7 +340,6 @@ Simulador de compensação por cessação de contrato de trabalho
 <div><label>Férias proporcionais já gozadas no ano (dias)</label><input id="propTakenDays" type="number" min="0" step=".01"></div>
 </div>
 <div class="row">
-<div><label>Retribuição de férias já paga (€)</label><input id="vacPaid" type="number" min="0" step=".01"></div>
 <div><label>Subsídio de férias vencido já pago (€)</label><input id="vacSubPaid" type="number" min="0" step=".01"></div>
 </div>
 <div class="row">
@@ -485,7 +484,6 @@ function calculate(){
 
  const takenDays=Math.max(0,v('vacTakenDays'));
  const propTakenDays=Math.max(0,v('propTakenDays'));
- const vacPaid=Math.max(0,v('vacPaid'));
  const vacSubPaid=Math.max(0,v('vacSubPaid'));
  const propSubPaid=Math.max(0,v('propSubPaid'));
 
@@ -621,13 +619,11 @@ const propSubGross=propGross;
  const totalSubGross=vacGross+propSubGross;
  const totalSubBalance=vestedSubBalance+proportionalSubBalance;
 
- // Vacation remuneration already paid is deducted from vacation remuneration only.
  // Separar rigorosamente férias vencidas das férias proporcionais.
-// O campo "Férias vencidas não gozadas" NUNCA inclui os proporcionais.
-const paidAgainstVested=Math.min(vacGross,vacPaid);
-const remainingPaidForProportional=Math.max(0,vacPaid-paidAgainstVested);
-const vacBalance=Math.max(0,vacGross-paidAgainstVested);
-const propVacBalance=propBalanceDays>0 ? Math.max(0,perDay*propBalanceDays-remainingPaidForProportional) : 0;
+ // A retribuição das férias já gozadas não é introduzida como pagamento manual.
+ // O campo "Férias vencidas não gozadas" NUNCA inclui os proporcionais.
+const vacBalance=vacGross;
+const propVacBalance=propBalanceDays>0 ? perDay*propBalanceDays : 0;
 
  // Salary in termination month: only calendar days outside suspension.
  const month=term.slice(5,7);
@@ -680,9 +676,9 @@ const propVacBalance=propBalanceDays>0 ? Math.max(0,perDay*propBalanceDays-remai
  Proporcionais do ano: <b>${num(vacAnnual)} × ${num(serviceDays)} / ${yearLen} = ${num(propDays)} dias de férias</b>; ${propTakenDays<=propDays?'menos '+num(propTakenDays)+' dias já gozados = <b>'+num(propBalanceDays)+' dias por gozar</b>':'foram gozados '+num(propTakenDays)+' dias, ou seja, <b>'+num(propExcessDays)+' dias gozados em excesso</b>'}.<br>
  Valor diário das férias vencidas: <b>${eur(monthly)} / ${num(vacAnnual)} = ${eur(perDay)}</b>.<br>
 Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias efetivamente trabalhados = ${eur(propGross)}</b>.<br>
- Retribuição de férias proporcional (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias = ${eur(propGross)}</b>.<br>
+ Retribuição de férias proporcionais ainda por pagar: <b>${num(propBalanceDays)} dias por gozar × ${eur(perDay)} = ${eur(propVacBalance)}</b>.<br>
  Subsídio de férias vencido: <b>${eur(vacGross)}</b> − já pago <b>${eur(vacSubPaid)}</b> = <b>${eur(vestedSubBalance)}</b>.<br>
- Subsídio de férias proporcional devido: <b>${eur(propSubGross)}</b>; já pago <b>${eur(propSubPaid)}</b>; saldo a pagar <b>${eur(proportionalSubBalance)}</b>${proportionalSubRefund>0?'; diferença potencial a devolver: <b>${eur(proportionalSubRefund)} </b>':''}.<br>
+ Subsídio de férias proporcional devido: <b>${eur(propSubGross)}</b>; já pago <b>${eur(propSubPaid)}</b>; saldo a pagar <b>${eur(proportionalSubBalance)}</b>${proportionalSubRefund>0?'; diferença potencial a devolver: <b>'+eur(proportionalSubRefund)+'</b>':''}.<br>
  Subsídio de Natal: <b>${num(serviceDays)} / ${yearLen} × ${eur(monthly)} = ${eur(christmas)}</b>.<br>
  <br><b>Formação profissional:</b> ${num(training.totalHours)} h × ${eur(training.hourly)}/h = <b>${eur(training.value)}</b>.<br>
  <b>Compensação / indemnização:</b><br>
@@ -707,7 +703,7 @@ Proporcionais (ACT): <b>${eur(monthly)} / ${yearLen} × ${num(serviceDays)} dias
 
  set('vacBalance',vacBalance);
  set('vacSubBalance',vestedSubBalance);
- set('propVacValue',propGross);
+ set('propVacValue',propVacBalance);
  set('propSubValue',proportionalSubBalance);
  set('propSubRefund',proportionalSubRefund);
  set('christmas',christmas);
